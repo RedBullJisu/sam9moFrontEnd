@@ -1,37 +1,34 @@
 <template>
   <!-- 코스피,코스닥,코스피200 area 차트 -->
-  <div class="row justify-content-center">
-    <div class="col-lg-10">
-      <div class="card z-index-2 chart-width">
-        <StockAreaChart/>
+  <div class="py-4 container-fluid">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="card z-index-2 chart-width">
+          <StockAreaChart/>
+        </div>
+      </div>
+      <!-- n-gram bubble 차트 -->
+      <div class="col-md-6">
+        <div class="card z-index-2">
+          <h5 class="bubble-text">오늘의 키워드</h5>
+          <NgramChart/>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- NewsHashTag 차트 -->
   <div class="row justify-content-center">
-    <div class="col-lg-10">
-      <div class="card z-index-2 hashtag-list custom-height">
+    <div class="col-lg-11">
+      <div class="card z-index-2 custom-height">
         <NewsHashTagChart/>
       </div>
     </div>
   </div>
 
-  <!-- n-gram bubble 차트 -->
-  <div class="row justify-content-center">
-    <div class="col-lg-10">
-      <div class="card z-index-2 chart-width">
-          <NgramChart/>
-      </div>
-    </div>
-  </div>
-
-
-
-
 </template>
 <script>
-// 지수야 제발 잘하자 장난치지말고
+
 import US from "../assets/img/icons/flags/US.png";
 import DE from "../assets/img/icons/flags/DE.png";
 import GB from "../assets/img/icons/flags/GB.png";
@@ -112,17 +109,24 @@ export default {
 };
 </script>
 <style scoped>
+
+
 .chart-width {
   width: 100%;
-  margin-left: auto;
+  padding-inline: 10px;
+  padding-bottom: 10px;
 }
 
-.hashtag-list {
-  margin-top: 30px;
-}
 
 .custom-height {
   height: 150px; /* 뉴스해시태그 영역 높이 */
   margin-bottom: 30px
 }
+
+
+.bubble-text {
+  margin-left: 10px;
+  margin-top: 10px;
+}
+
 </style>

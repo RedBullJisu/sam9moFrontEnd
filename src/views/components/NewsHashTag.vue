@@ -3,23 +3,24 @@
     <div>
       <h5 style="margin-top: 10px;">뉴스 해시태그 순위</h5>
     </div>
-    <div v-if="keywordCountList.length > 0" class="button-container " style= "overflow: auto;">
+    <div v-if="keywordCountList.length > 0" class="button-container " style="overflow: auto;">
       <div class="d-flex p-3 gap-2 mb-3 text-white justify-content-center flex-wrap" style="width: 100%">
         <div id="hash" class="btn-group">
-          <button type="button"
-                  v-for="(item, index) in keywordCountList"
-                  :key="index"
-          :style="{padding: `${item.keyword.length * 1.5}px 10px`}">
+          <vsud-button type="button" variant="gradient"
+                       v-for="(item, index) in keywordCountList"
+                       :key="index"
+                       class="button-style"
+                       :style="{padding: `${item.keyword.length * 1.5}px 10px`}">
             <a :href="item.link"
                target="_blank"
-               class="fs-6"
+               class="fs-6 button-text"
                style="color:#ffffff;">
-              #{{ index + 1 }}.  {{ item.keyword }}
+              #{{ index + 1 }}. {{ item.keyword }}
               <span class="visually-hidden">
               <i class="fas fa-thumbs-up">{{ item.count }}</i>
             </span>
             </a>
-          </button>
+          </vsud-button>
         </div>
       </div>
     </div>
@@ -29,9 +30,12 @@
 
 <script>
 import axios from "axios";
+import VsudButton from "@/components/VsudButton.vue";
 
 export default {
-  name:"NewsHashTagChart",
+  name: "NewsHashTagChart",
+  components: {VsudButton},
+
   data() {
     return {
       keywordCountList: [],
@@ -80,4 +84,20 @@ button {
 button:hover {
   background-color: #1d77e3;
 }
+
+.button-text{
+  font-weight: lighter;
+}
+
+.button-style {
+  background: linear-gradient(45deg, #e600ff, #9710f1);
+  transition: background 0.3s ease, opacity 0.3s ease;
+  opacity: 1;
+}
+
+.button-style:hover {
+  background: linear-gradient(45deg, rgba(72, 160, 69, 0.57), rgba(255, 251, 7, 0.73));
+  opacity: 0.7;
+}
+
 </style>
