@@ -31,7 +31,7 @@
 
 </template>
 <script>
-
+// 지수야 제발 잘하자 장난치지말고
 import US from "../assets/img/icons/flags/US.png";
 import DE from "../assets/img/icons/flags/DE.png";
 import GB from "../assets/img/icons/flags/GB.png";
