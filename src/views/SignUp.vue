@@ -93,21 +93,32 @@
           <div class="card-body">
             <form role="form">
               <div class="mb-3">
-                <vsud-input type="text" placeholder="이름" aria-label="Name" />
+                <input v-model="userName" type="text" class="form-control form-control-default invalid" name="name" placeholder="이름" isrequired="false">
               </div>
               <div class="mb-3">
-                <vsud-input type="email" placeholder="이메일" aria-label="Email" />
+                <input v-model="userEmail" type="email" class="form-control form-control-default invalid" name="email" placeholder="이메일" isrequired="false">
               </div>
               <div class="mb-3">
-                <vsud-input type="password" placeholder="패스워드" aria-label="Password" />
+                <input v-model="userPassword" type="password" class="form-control form-control-default invalid" name="password" placeholder="패스워드" isrequired="false">
               </div>
               <div class="mb-3">
-                <vsud-input type="favoriteStock" placeholder="관심종목 검색" aria-label="Name" />
+                <input v-model="searchTerm" type="text" class="form-control form-control-default invalid" name="stocks" placeholder="관심종목" isrequired="false">
               </div>
-              <div class="mb-3">
-                <vsud-input type="password" placeholder="패스워드" aria-label="Password" />
-              </div>
-              
+              <ul
+              v-if="searchStocks.length"
+              class="list-group"
+              >
+                <li
+                  v-for="stock in searchStocks"
+                  :key="stock.name"
+                  @click="selectStock(stock.name)"
+                  class="px-0 mb-2 border-0 list-group-item d-flex align-items-center"
+                >
+                  {{ stock.name }}
+                </li>
+              </ul>
+              <vsud-button v-for="(stock, index) in selectedStock" :key="index" color="primary" variant="gradient" class="my-1 mb-2" style="margin-right: 5px;" @click="deleteStock(stock)">{{stock}}</vsud-button>
+
               <vsud-checkbox id="flexCheckDefault" checked>
                 I agree the
                 <a
@@ -117,7 +128,7 @@
               </vsud-checkbox>
 
               <div class="text-center">
-                <vsud-button color="dark" full-width variant="gradient" class="my-4 mb-2">회원가입</vsud-button>
+                <vsud-button color="dark" full-width variant="gradient" class="my-4 mb-2" @click="signUpHandler">회원가입</vsud-button>
               </div>
               <p class="text-sm mt-3 mb-0">
                 이미 계정이 있으신가요?
@@ -136,17 +147,148 @@
 
 <script>
 import Navbar from "@/examples/PageLayout/Navbar.vue";
-import VsudInput from "@/components/VsudInput.vue";
 import VsudCheckbox from "@/components/VsudCheckbox.vue";
 import VsudButton from "@/components/VsudButton.vue";
-import bgImg from "@/assets/img/curved-images/curved6.jpg"
+import bgImg from "@/assets/img/curved-images/curved6.jpg";
+import stocks from "../data/stocks.json"
+import {ref, computed} from 'vue'
+import axios from 'axios';
+import router from '../router';
+
 export default {
   name: "SignUp",
   components: {
     Navbar,
-    VsudInput,
     VsudCheckbox,
     VsudButton,
+  },
+  setup() {
+
+    let searchTerm = ref('')
+    let selectedStock = ref([])
+
+    let userName = ref('')
+    let userEmail = ref('')
+    let userPassword = ref('')
+    
+    const searchStocks = computed(() => {
+      if (searchTerm.value === '') {
+        return []
+      }
+
+      let matches = 0
+
+      return stocks.filter(stock => {
+        if (stock.name.toLowerCase().includes(searchTerm.value.toLowerCase()) && matches < 10) {
+          matches++
+          return stocks
+        }
+      })
+    });
+
+    const selectStock = (stock) => {
+      selectedStock.value.push(stock)
+      searchTerm.value = ''
+
+    }
+
+    const deleteStock = (stock) => {
+      selectedStock.value = selectedStock.value.filter(item => item !== stock)
+      searchTerm.value = ''
+    }
+    
+    const signUpHandler = async (event) => {
+
+      event.preventDefault();
+
+      if (userName.value == 0) {
+        alert("이름을 입력하세요")
+        return
+      }
+      if (userEmail.value == 0) {
+        alert("이메일을 입력하세요")
+        return
+      }
+      if (userPassword.value == 0) {
+        alert("비밀번호을 입력하세요")
+        return
+      }
+
+      const fetchSignUpData = async () => {
+        
+        const url = 'http://221.156.60.18:8989/sign-up'
+
+        const signUpBody = {
+          "account": userEmail.value,
+          "password": userPassword.value,
+          "name":  userName.value
+        }
+
+        console.log("loginBody", signUpBody)
+        
+        const response = await axios.post(url, signUpBody).catch(() => null)
+        if (!response) return null
+
+        const result = response.data
+        return result
+      }
+      
+      const selectedStock_list = selectedStock.value.map(stockName => {
+        const foundStock = stocks.find(stock => stock.name === stockName);
+          if (foundStock) {
+              const obj = {};
+              obj[foundStock.code] = { name: foundStock.name };
+              return obj;
+        }
+        return null;
+      }).filter(Boolean);
+        
+      console.log("selectedStock_list", selectedStock_list)
+
+      const fetchFavoriteStockData = async () => {
+        
+        const url = "http://222.102.43.244:8094/favorite_stock/send";
+
+        const favoriteStockBody = {
+          "account": userEmail.value,
+          "favorite_stock" : selectedStock_list
+        }
+
+        console.log("favoriteStockBody", favoriteStockBody)
+        
+        const response = await axios.post(url, favoriteStockBody).catch(() => null)
+        if (!response) return null
+
+        const result = response.data
+        return result
+      }
+
+      const signUpResponse = await fetchSignUpData();
+      console.log("signUpResponse", signUpResponse)
+
+      if (signUpResponse.status == "SUCCESS") {
+        const favoriteStockResponse = await fetchFavoriteStockData()
+        if (!favoriteStockResponse) console.log("관심 종목 추가 시 에러", favoriteStockResponse)
+        router.push({name : "Sign In"})
+      } else {
+        alert("회원가입에 실패했습니다. 정보를 다시 입력해주세요")
+        return
+      }
+
+    }
+    
+    return {
+      userName,
+      userEmail,
+      userPassword,
+      stocks,
+      searchTerm,
+      searchStocks,
+      selectStock,
+      deleteStock,
+      selectedStock,
+      signUpHandler
+    }
   },
   data() {
     return {
@@ -157,13 +299,11 @@ export default {
     this.$store.state.hideConfigButton = true;
     this.$store.state.showNavbar = false;
     this.$store.state.showSidenav = false;
-    this.$store.state.showFooter = false;
   },
   beforeUnmount() {
     this.$store.state.hideConfigButton = false;
     this.$store.state.showNavbar = true;
     this.$store.state.showSidenav = true;
-    this.$store.state.showFooter = true;
   },
 };
 </script>
