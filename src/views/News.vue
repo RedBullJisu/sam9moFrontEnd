@@ -14,6 +14,8 @@
             >
               {{ category }}
             </button>
+
+
           </div>
         </div>
 
@@ -29,14 +31,28 @@
         <!-- 뉴스 카테고리 목록 요소-->
         <div class="news-list" @scroll="checkScroll">
           <div>
-            <div v-for="item in news" :key="item._id" class="news-item">
-              <h4><img :src="item.news_img" alt="이미지가 없습니다" class="news-thumbnail">{{ item.news_title }}
-                <img class="icon-set" :src="sentimentImages[item.news_sentiment]" alt="Sentiment analysis result"/>
-              </h4>
-              <p>{{ item.content_summary }}</p>
-              <p>키워드: {{ item.keyword }}</p>
-              <div class="btn-width">
-                <button @click="() => openNews(item.news_link)" class="btnset">상세뉴스 보기</button>
+            <div v-for="item in news" :key="item._id">
+
+              <div class="news-element">
+                <div class="col-md-2">
+                  <img :src="item.news_img" alt="이미지가 없습니다" class="news-thumbnail">
+                </div>
+
+                <div class="content-section col-md-8">
+                  <h4 class="title-section">{{ item.news_title }}</h4>
+                  <p>{{ item.content_summary }}</p>
+                  <div class="kword-section">
+                    <p>키워드: {{ item.keyword }}</p>
+                  </div>
+                </div>
+
+                <div class="col-md-3 content-container">
+                  <img class="icon-set" :src="sentimentImages[item.news_sentiment]"
+                       alt="Sentiment analysis result"/>
+                  <h6 class="sentiment-text">{{ getSentimentText(item.news_sentiment) }}</h6> <!-- 감성분석 출력 -->
+                  <button @click="() => openNews(item.news_link)" class="btn-set">상세보기</button>
+
+                </div>
               </div>
             </div>
           </div>
@@ -48,8 +64,7 @@
 
 <script>
 import axios from "axios";
-import {ref, onMounted} from "vue";
-
+import {ref, onMounted, computed} from "vue";
 export default {
   name: "NewsPage",
   setup() {
@@ -106,6 +121,7 @@ export default {
       }
     };
 
+
     // 스크롤 다운 시, 스크롤 바 축소 및 추가 뉴스 출력
     const checkScroll = (event) => {
       let element = event.target;
@@ -118,6 +134,19 @@ export default {
         }
       }
     };
+
+    // 감성분석에 따른 긍정, 중립, 부정 출력
+    const getSentimentText = (news_sentiment) => {
+      switch (news_sentiment) {
+        case 'positive':
+          return '긍정';
+        case 'negative':
+          return '부정';
+        default :
+          return '중립';
+      }
+    };
+
 
     // 긍정,중립,부정 아이콘
     const sentimentImages = {
@@ -136,7 +165,8 @@ export default {
       checkScroll,
       selectedNews,
       sentimentImages,
-      openNews
+      openNews,
+      getSentimentText
     };
   }
 }
@@ -163,9 +193,37 @@ export default {
 
 /* 뉴스 목록 썸네일 이미지 */
 .news-thumbnail {
-  width: auto; /* 이미지 넓이 */
-  height: 150px; /* 이미지 높이 (auto로 설정하여 비율 유지) */
+  width: 170px; /* 이미지 넓이 */
+  height: 180px; /* 이미지 높이 (auto로 설정하여 비율 유지) */
   margin-right: 20px; /* 이미지와 제목 사이의 간격 */
+  margin-bottom: 35px;
+}
+
+/* 뉴스 목록 content 수평 배치 */
+.news-element {
+  display: flex;
+}
+
+/* 감성분석,상세보기 버튼 컨테이너 */
+.content-container {
+  margin-left: 40px;
+}
+
+.content-section {
+  display: flex;
+  flex-direction: column;
+  margin-left: 20px;
+}
+
+.kword-section {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.title-section {
+  display: flex;
+  align-items: center;
 }
 
 .news-set {
@@ -177,25 +235,39 @@ export default {
   border: 1px solid black;
 }
 
+/* 카테고리 버튼 배치 */
 .nav-wrapper {
   padding: 20px;
 }
 
 /* 상세뉴스 보기 버튼 */
-.btnset {
+.btn-set {
   border-radius: 10px;
-  padding: 5px;
   background-color: #4CAF50;
   color: white;
   border: none;
   cursor: pointer;
   font-size: 12px;
+  margin-top: 30px;
+  margin-left: 5px;
+
+  transition: background-color 0.5s ease;
 }
 
-.btn-width{
-  padding-bottom: 10px;
+/* 버튼 호버링 색상 */
+button:hover {
+  background-color: #1d77e3;
 }
-.icon-set{
-  padding-left: 5px;
+
+/* 감성분석 텍스트 */
+.sentiment-text {
+  margin-top: 20px;
+  margin-left: 16px;
+}
+
+/* 감성분석 아이콘 */
+.icon-set {
+  padding-left: 10px;
+  padding-bottom: 10px;
 }
 </style>
