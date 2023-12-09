@@ -1,7 +1,7 @@
 <template>
   <div class="card mb-4">
-    <div class="card-header pb-0">
-      <h6>모든종목</h6>
+    <div class="card-header pb-0" style="border-top-left-radius: 25px; border-top-right-radius: 25px; background-color: #0d6efd;">
+      <h5 style="color: white;">모든종목</h5>
       <select v-model="selectedMarket" @change="updateMarket">
         <option value="kospi">코스피</option>
         <option value="kosdaq">코스닥</option>
@@ -41,7 +41,7 @@
           </thead>
 
           <tbody>
-          <tr v-for="stock in currentMarketStocks" :key="stock.id" class="hover:bg-gray-200"  @click="onStockClick(stock)">
+          <tr v-for="stock in currentMarketStocks" :key="stock.id" class="hover:bg-gray-200 hoverable-row"  @click="onStockClick(stock)">
             <td>
               <div class="d-flex px-2 py-1">
 
@@ -142,4 +142,11 @@ export default {
 };
 </script>
 
+<style scoped>
 
+.hoverable-row:hover {
+  background-color: rgba(91, 91, 91, 0.26); /* 원하는 색상으로 변경 가능 */
+  cursor: pointer;
+}
+
+</style>

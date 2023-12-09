@@ -7,6 +7,7 @@
           <StockAreaChart/>
         </div>
       </div>
+
       <!-- n-gram bubble 차트 -->
       <div class="col-md-6">
         <div class="card z-index-2">
@@ -128,5 +129,6 @@ export default {
   margin-left: 10px;
   margin-top: 10px;
 }
+
 
 </style>

@@ -6,7 +6,7 @@
     <div v-if="keywordCountList.length > 0" class="button-container " style="overflow: auto;">
       <div class="d-flex p-3 gap-2 mb-3 text-white justify-content-center flex-wrap" style="width: 100%">
         <div id="hash" class="btn-group">
-          <vsud-button type="button" variant="gradient"
+          <vsud-button type="button"
                        v-for="(item, index) in keywordCountList"
                        :key="index"
                        class="button-style"
@@ -74,7 +74,7 @@ button {
   border-radius: 15px;
   margin-right: 5px;
   padding: 15px;
-  background-color: #4CAF50;
+  background-color: #0d6efd;
   color: white;
   border: none;
   cursor: pointer;
@@ -90,13 +90,12 @@ button:hover {
 }
 
 .button-style {
-  background: linear-gradient(45deg, #e600ff, #9710f1);
   transition: background 0.3s ease, opacity 0.3s ease;
   opacity: 1;
 }
 
 .button-style:hover {
-  background: linear-gradient(45deg, rgba(72, 160, 69, 0.57), rgba(255, 251, 7, 0.73));
+  background: linear-gradient(45deg, rgba(255, 165, 0, 0.53), rgba(255, 0, 0, 0.93));
   opacity: 0.7;
 }
 

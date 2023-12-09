@@ -5,7 +5,7 @@
   >
     <ul class="navbar-nav">
       <li class="nav-item">
-        <sidenav-collapse nav-text="메인" :to="{ name: 'Dashboard' }">
+        <sidenav-collapse class="menuText" nav-text="메인" :to="{ name: 'Dashboard' }">
           <template #icon>
             <icon name="dashboard" />
           </template>
@@ -25,8 +25,6 @@
           </template>
         </sidenav-collapse>
       </li>
-
-
 
       <li class="mt-3 nav-item">
         <h6
@@ -85,3 +83,12 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.menuText{
+  color: #ffffff;
+}
+</style>
+
+
+
