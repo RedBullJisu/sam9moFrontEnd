@@ -19,22 +19,20 @@
                 <div class="card-body">
                   <form role="form" class="text-start">
                     <label>이메일/ID</label>
-                    <!-- <vsud-input :value="text.value" @input="text.value = $event.target.value" type="email" placeholder="이메일" name="email"/> -->
                     <input v-model="userEmail" type="email" class="form-control form-control-default invalid" name="email" placeholder="이메일" isrequired="false">
                     <label>패스워드/PW</label>
-                    <!-- <vsud-input type="password" placeholder="패스워드" name="password" /> -->
                     <input v-model="userPassword" type="password" class="form-control form-control-default invalid" name="password" placeholder="패스워드" isrequired="false">
                     <vsud-switch id="rememberMe" checked>계정 정보 기억하기</vsud-switch>
                     <div class="text-center">
-                      
+
                       <vsud-button
-                        class="my-4 mb-2"
-                        variant="gradient"
-                        color="info"
-                        full-width
-                        @click="signInHandler"
+                          class="my-4 mb-2"
+                          variant="gradient"
+                          color="info"
+                          full-width
+                          @click="signInHandler"
                       >로그인</vsud-button>
-                  
+
                     </div>
                   </form>
                 </div>
@@ -42,7 +40,7 @@
                   <p class="mx-auto mb-4 text-sm">
                     계정이 없으신가요?
                     <a href="#/sign-up" class="text-info text-gradient font-weight-bold"
-                      >회원가입</a>
+                    >회원가입</a>
                   </p>
                 </div>
               </div>
@@ -50,8 +48,8 @@
             <div class="col-md-6">
               <div class="top-0 oblique position-absolute h-100 d-md-block d-none me-n8">
                 <div
-                  class="bg-cover oblique-image position-absolute fixed-top ms-auto h-100 z-index-0 ms-n6"
-                  :style="{
+                    class="bg-cover oblique-image position-absolute fixed-top ms-auto h-100 z-index-0 ms-n6"
+                    :style="{
                     backgroundImage:
                       `url(${bgImg})`,
                   }"
@@ -86,34 +84,38 @@ export default {
     const url = 'http://221.156.60.18:8989/sign-in'
     const userEmail = ref('')
     const userPassword = ref('')
-    
+
     const signInHandler = async (event) => {
 
       event.preventDefault();
 
       console.log("userEmail", userEmail.value, "userPassword", userPassword.value)
 
-      if (userEmail.value == 0 || userPassword.value == 0) {
-        alert("이메일 또는 비밀번호를 입력하세요.")
+      if (userEmail.value == 0) {
+        alert("이메일을 입력하세요")
+        return
+      }
+      if (userPassword.value == 0) {
+        alert("비밀번호를 입력하세요")
         return
       }
 
-      const fetchLoginData = async () => {
-        
-        const loginBody = {
+      const fetchSignInData = async () => {
+
+        const signInBody = {
           "account": userEmail.value,
           "password": userPassword.value
         }
 
-        console.log("loginBody", loginBody)
-        
-        const loginHeader = {
+        console.log("loginBody", signInBody)
+
+        const signInHeader = {
           headers : {
             "finance-agent" : "SAM9MO/0.0.1"
           }
         }
 
-        const response = await axios.post(url, loginBody, loginHeader).catch(() => null)
+        const response = await axios.post(url, signInBody, signInHeader).catch(() => null)
         if (!response) return null
 
         const result = response.data
@@ -122,7 +124,7 @@ export default {
 
       const fetchStockData = async (userEmail) => {
 
-        const url = "http://222.102.43.244:8094/favorite_stock";
+        const url = "http://222.102.43.244:8094/favorite_stock/receive";
         const requestBody = {
           "account" : userEmail
         }
@@ -132,35 +134,35 @@ export default {
         const result = response
         return result
       }
-      
-      const signInResponse = await fetchLoginData()
-      console.log("userEmail", userEmail.value) 
+
+      const signInResponse = await fetchSignInData()
+      console.log("userEmail", userEmail.value)
       const favoritestockResponse = await fetchStockData(userEmail.value)
 
       console.log("signInResponse", signInResponse)
       console.log("favoritestockResponse", favoritestockResponse)
 
-      if (!signInResponse) {
-        alert("로그인에 실패했습니다.")
+      if (!signInResponse || !signInResponse.data) {
+        alert("로그인에 실패했습니다. 아이디나 비밀번호를 다시 확인하세요")
         return
       }
 
-      if (!signInResponse.data) {
-        alert("로그인에 실패했습니다.")
-        return
-      }
-      
       const sessionStorage = window.sessionStorage;
-      const storagedata = {
-        "tokendata" : signInResponse.data,
-        "favorite_stock_data" : favoritestockResponse.data
+
+      const set_token_data = {
+        "account" : userEmail.value,
+        "token_data" : signInResponse.data
       }
-      sessionStorage.setItem("data", JSON.stringify(storagedata))
-      const data = sessionStorage.getItem("data")
-      console.log("data", JSON.parse(data))
-      
+
+      sessionStorage.setItem("token", JSON.stringify(set_token_data))
+      sessionStorage.setItem("favorite_stock", JSON.stringify(favoritestockResponse.data))
+      const token_data = JSON.parse(sessionStorage.getItem("token"))
+      const favorite_stock_data = JSON.parse(sessionStorage.getItem("favorite_stock"))
+      console.log("token_data", token_data)
+      console.log("favorite_stock_data", favorite_stock_data)
+
       router.push({name: "Dashboard"})
-    } 
+    }
 
     return {
       userEmail,
