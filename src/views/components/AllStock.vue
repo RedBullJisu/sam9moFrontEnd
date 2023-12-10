@@ -1,6 +1,6 @@
 <template>
   <div class="card mb-4">
-    <div class="card-header pb-0" style="border-top-left-radius: 25px; border-top-right-radius: 25px; background-color: #0d6efd;">
+    <div class="card-header pb-0" style="border-top-left-radius: 25px; border-top-right-radius: 25px; background-color: #0b54c4;">
       <h5 style="color: white;">모든종목</h5>
       <select v-model="selectedMarket" @change="updateMarket">
         <option value="kospi">코스피</option>

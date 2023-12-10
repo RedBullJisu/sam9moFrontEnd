@@ -1,9 +1,9 @@
 <template>
   <div class="card mb-4">
-    <div class="card-header pb-0" style="border-top-left-radius: 25px; border-top-right-radius: 25px; background-color: #0d6efd;">
+    <div class="card-header pb-0" style="border-top-left-radius: 15px; border-top-right-radius: 15px; background-color: #0b54c4;">
       <h5 style="color: white;">관심종목</h5>
     </div>
-    <div class="card-body px-0 pt-0 pb-2">
+    <div class="card-body px-0 pt-0 pb-0">
       <div class="table-responsive p-0">
         <table class="table align-items-center justify-content-center mb-0">
           <thead>

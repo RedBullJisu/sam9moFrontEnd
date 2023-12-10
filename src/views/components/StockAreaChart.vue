@@ -1,7 +1,7 @@
 <template>
   <div>
     <div>
-      <h5 class="Area-text bold-text">{{`${selectedMarket}지수`}}</h5>
+      <h5 class="Area-text bold-text">{{`${uppercaseMarket}지수`}}</h5>
       <apexcharts type="area" height="280" :options="state.chartOptions"
                   :series="state.series[selectedMarket] || []"></apexcharts>
     </div>
@@ -35,7 +35,7 @@
 <script>
 import VueApexCharts from 'vue3-apexcharts'
 import axios from "axios";
-import {ref, reactive, onMounted} from 'vue'
+import {ref, reactive, onMounted, computed} from 'vue'
 
 export default {
   name: "StockAreaChart",
@@ -62,10 +62,10 @@ export default {
         },
 
         stroke: {
-          colors: ['rgb(0,196,255)'],
+          colors: ['rgb(255,21,0)'],
           width: 3,
         },
-        colors: ['rgb(0,196,255)'],
+        colors: ['rgb(255,0,0)'],
 
         dataLabels: {
           enabled: false
@@ -234,6 +234,8 @@ export default {
 
     const selectedTimeline = ref('D1');
 
+
+
     const updateDataAndTimeline = async (timeline) => {
       selectedTimeline.value = timeline;
       await fetchData(timeline, state.series);
@@ -250,6 +252,10 @@ export default {
     });
 
     const selectedMarket = ref('kospi');
+
+    const uppercaseMarket = computed(() => {
+      return selectedMarket.value.toUpperCase();
+    });
 
     const selectMarket = async (market) => {
       if (selectedMarket.value !== market) {
@@ -356,7 +362,8 @@ export default {
       selectedMarket,
       updateData,
       updateDataAndTimeline,
-      selectedTimeline
+      selectedTimeline,
+      uppercaseMarket
     };
     // 주석 추가
   }
@@ -379,7 +386,7 @@ export default {
 
 /* 시장 버튼 색상 */
 .button-market {
-  background-color: #0d6efd;
+  background-color: rgb(11, 84, 196);
 }
 
 /* 시장 버튼 호버링 색상 */
@@ -399,10 +406,7 @@ export default {
   opacity: 0.7;
 }
 
-.button-selected {
-  background: linear-gradient(45deg, rgba(255, 165, 0, 0.53), rgba(255, 0, 0, 0.93));
-  opacity: 0.7;
-}
+
 
 /* 시장,타임라인 버튼 위치 */
 .button-container {

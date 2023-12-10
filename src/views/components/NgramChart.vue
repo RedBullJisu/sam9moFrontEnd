@@ -70,6 +70,6 @@ export default {
 #ngramchart {
   width: 100%;
   max-width: 100%;
-  height: 615px;
+  height: 610px;
 }
 </style>
