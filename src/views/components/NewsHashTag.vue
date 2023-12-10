@@ -1,6 +1,6 @@
 <template>
   <div style="text-align: center;">
-    <div class="hashtag-height" style="background-color: #0B54C4FF">
+    <div class="hashtag-height" style="background-color: #003D88FF">
       <h5 style="color: #ffffff">뉴스 해시태그 순위</h5>
     </div>
 
@@ -52,7 +52,7 @@ export default {
   },
   methods: {
     fetchKeywordCountList(date) {
-      axios.get(`http://221.156.60.18:8092/keyword/count?date=${date}`)
+      axios.get(`http://221.156.60.18:8072/keyword/count?date=${date}`)
           .then((response) => {
             this.keywordCountList = response.data.keyword_count_list;
           })
@@ -75,20 +75,17 @@ button {
   border-radius: 15px;
   margin-right: 5px;
   padding: 15px;
-  background-color: #0b54c4;
-  color: white;
+  background-color: #0e61e0;
+  //color: white;
   border: none;
   cursor: pointer;
   transition: background-color 0.5s ease;
 }
 
 button:hover {
-  background-color: #0b54c4;
+  background-color: #003D88FF;
 }
 
-.button-text{
-  font-weight: lighter;
-}
 
 .button-style {
   transition: background 0.3s ease, opacity 0.3s ease;
@@ -96,8 +93,8 @@ button:hover {
 }
 
 .button-style:hover {
-  background: linear-gradient(45deg, rgba(255, 165, 0, 0.53), rgba(255, 0, 0, 0.93));
-  opacity: 0.7;
+  //background: linear-gradient(45deg, rgb(0, 78, 109), rgb(30, 148, 160));
+  //opacity: 1;
 }
 
 .hashtag-height{

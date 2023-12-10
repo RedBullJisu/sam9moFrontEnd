@@ -7,14 +7,13 @@
 
             <!-- 뉴스 카테고리 버튼 생성 -->
             <button v-for="(value, category) in categories" :key="value" class="nav-item"
-                    :class="['nav-link', { 'active': selectedCategory.value === value }]"
+                    :class="['nav-link', { 'active': selectedCategory.value === value, 'selected': selectedCategory.value === value }]"
                     @click="() => selectCategory(value)"
                     role="tab"
                     :aria-selected="selectedCategory.value === value ? 'true' : 'false'"
             >
               {{ category }}
             </button>
-
           </div>
         </div>
 
@@ -181,7 +180,7 @@ export default {
 
 /* 호버링 상태 */
 .nav-item.nav-link:hover {
-  background-color: #4CAF50; /* 배경색 */
+  background-color: #0e61e0; /* 배경색 */
 }
 
 /* 뉴스 목록 출력 영역 */
@@ -243,7 +242,7 @@ export default {
 /* 상세뉴스 보기 버튼 */
 .btn-set {
   border-radius: 10px;
-  background-color: #0B54C4FF;
+  background-color: #0e61e0;
   color: white;
   border: none;
   cursor: pointer;
@@ -256,7 +255,7 @@ export default {
 
 /* 버튼 호버링 색상 */
 button:hover {
-  background-color: rgba(19, 115, 25, 0.58);
+  background-color: #003D88FF;
 }
 
 /* 감성분석 텍스트 */
@@ -270,4 +269,8 @@ button:hover {
   padding-left: 10px;
   padding-bottom: 10px;
 }
+.nav-item{
+  margin-left: 5px;
+}
+
 </style>
