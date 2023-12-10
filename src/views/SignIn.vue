@@ -31,6 +31,7 @@
                         color="info"
                         full-width
                         @click="signInHandler"
+                        :to="{ name: 'Sign In' }"
                       >로그인</vsud-button>
                   
                     </div>
@@ -84,7 +85,14 @@ export default {
     const url = 'http://221.156.60.18:8989/sign-in'
     const userEmail = ref('')
     const userPassword = ref('')
+
+    const sessionStorage = window.sessionStorage;
+    console.log("sessionStorage", sessionStorage)
     
+    if (sessionStorage.length != 0) {
+      router.push({name: "Dashboard"})
+    } 
+
     const signInHandler = async (event) => {
 
       event.preventDefault();
@@ -147,7 +155,7 @@ export default {
         return
       }
       
-      const sessionStorage = window.sessionStorage;
+      
 
       const set_token_data = {
         "account" : userEmail.value,

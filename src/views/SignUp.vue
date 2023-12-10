@@ -112,7 +112,7 @@
                   v-for="stock in searchStocks"
                   :key="stock.name"
                   @click="selectStock(stock.name)"
-                  class="px-0 mb-2 border-0 list-group-item d-flex align-items-center"
+                  class="list px-0 mb-2 border-0 list-group-item d-flex align-items-center"
                 >
                   {{ stock.name }}
                 </li>
@@ -307,3 +307,11 @@ export default {
   },
 };
 </script>
+
+<style>
+.list:hover {
+  cursor: pointer; /* 마우스 커서를 손가락 모양으로 변경 */
+  background-color: #f5f5f5; /* 배경색을 회색으로 변경 */
+}
+</style>
+

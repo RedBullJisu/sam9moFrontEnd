@@ -92,6 +92,7 @@
 <script>
 import { computed, ref } from 'vue';
 import { useStore } from 'vuex'
+import axios from "axios";
 
 export default {
   name: "AllStock",
@@ -99,9 +100,9 @@ export default {
     const store = useStore();
     const selectedMarket = ref(store.state.StockPage.currentMarket);
     const allStocks = computed(() => store.state.StockPage.allStocks);
-    const sentiment = computed(()=> store.state.StockPage.sentiment);
+    // const sentiment = computed(()=> store.state.StockPage.sentiment);
     console.log("allstock컴포넌트에서 allStocks 확인",allStocks)
-    console.log("allstock컴포넌트에서 sentiment 확인",sentiment)
+    // console.log("allstock컴포넌트에서 sentiment 확인",sentiment)
 
     // 선택된 시장의 주식 데이터를 가져옵니다.
     const currentMarketStocks = computed(() => {
@@ -127,8 +128,36 @@ export default {
       store.dispatch('StockPage/updateMarket', selectedMarket.value);
     }
 
-    function addToMyStocks(stock) {
+    const addToMyStocks = async (stock)=> {
       store.dispatch('StockPage/addToMyStocks', stock);
+      // const alarmstock = { stockid: stock.initial.stck_shrn_iscd, morLes: '+', username: "장건욱", price: 0.1};
+      // console.log("allstock에서 넘어가는 stockid 확인",alarmstock)
+      // store.dispatch("StockPage/alarmstock", alarmstock)
+
+      //session 객체 선언
+        const sessionStorage = window.sessionStorage;
+        const url = "http://222.102.43.244:8094/favorite_stock/add";
+
+        const favoriteStockBody = {
+          "account": JSON.parse(sessionStorage.getItem("token")).account, // 추후 계정 바꿔야함 세션에서 가져오는 아이디로
+          "favorite_stock" : {
+            [stock.initial.stck_shrn_iscd]:{ // 주식고유번호
+              "name": stock.initial.COMPANY, // 회사명
+              "fluctuation" : "", //숫자
+              "fluctuation_toggle" : "" //plus,minus
+            }
+          }
+        }
+        // console.log("favoriteStockBody", favoriteStockBody)
+        const response = await axios.post(url, favoriteStockBody).catch(() => null)
+        if (!response) return null
+
+        const result = response.data
+
+                                // favoite_stock: 세션이름 json형태로 result 넣어줌
+        sessionStorage.setItem("favorite_stock", JSON.stringify(result))
+        const data = sessionStorage.getItem("favorite_stock")
+        console.log("favorite_stock", JSON.parse(data))
     }
 
     return {
