@@ -29,8 +29,8 @@ export default {
 
 
             const container = root.container.children.push(am5.Container.new(root, {
-                width: am5.percent(100),
-                height: am5.percent(100),
+                width: am5.percent(115),
+                height: am5.percent(115),
                 layouts: root.verticalLayout
             }));
 
@@ -68,8 +68,8 @@ export default {
 
 <style scoped>
 #ngramchart {
-  width: 180%;
+  width: 100%;
   max-width: 100%;
-  height:500px;
+  height: 570px;
 }
 </style>

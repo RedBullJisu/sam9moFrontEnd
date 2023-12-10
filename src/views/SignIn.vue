@@ -24,15 +24,16 @@
                     <input v-model="userPassword" type="password" class="form-control form-control-default invalid" name="password" placeholder="패스워드" isrequired="false">
                     <vsud-switch id="rememberMe" checked>계정 정보 기억하기</vsud-switch>
                     <div class="text-center">
-
+                      
                       <vsud-button
-                          class="my-4 mb-2"
-                          variant="gradient"
-                          color="info"
-                          full-width
-                          @click="signInHandler"
+                        class="my-4 mb-2"
+                        variant="gradient"
+                        color="info"
+                        full-width
+                        @click="signInHandler"
+                        :to="{ name: 'Sign In' }"
                       >로그인</vsud-button>
-
+                  
                     </div>
                   </form>
                 </div>
@@ -40,7 +41,7 @@
                   <p class="mx-auto mb-4 text-sm">
                     계정이 없으신가요?
                     <a href="#/sign-up" class="text-info text-gradient font-weight-bold"
-                    >회원가입</a>
+                      >회원가입</a>
                   </p>
                 </div>
               </div>
@@ -48,8 +49,8 @@
             <div class="col-md-6">
               <div class="top-0 oblique position-absolute h-100 d-md-block d-none me-n8">
                 <div
-                    class="bg-cover oblique-image position-absolute fixed-top ms-auto h-100 z-index-0 ms-n6"
-                    :style="{
+                  class="bg-cover oblique-image position-absolute fixed-top ms-auto h-100 z-index-0 ms-n6"
+                  :style="{
                     backgroundImage:
                       `url(${bgImg})`,
                   }"
@@ -85,6 +86,13 @@ export default {
     const userEmail = ref('')
     const userPassword = ref('')
 
+    const sessionStorage = window.sessionStorage;
+    console.log("sessionStorage", sessionStorage)
+    
+    if (sessionStorage.length != 0) {
+      router.push({name: "Dashboard"})
+    } 
+
     const signInHandler = async (event) => {
 
       event.preventDefault();
@@ -101,14 +109,14 @@ export default {
       }
 
       const fetchSignInData = async () => {
-
+        
         const signInBody = {
           "account": userEmail.value,
           "password": userPassword.value
         }
 
         console.log("loginBody", signInBody)
-
+        
         const signInHeader = {
           headers : {
             "finance-agent" : "SAM9MO/0.0.1"
@@ -134,9 +142,9 @@ export default {
         const result = response
         return result
       }
-
+      
       const signInResponse = await fetchSignInData()
-      console.log("userEmail", userEmail.value)
+      console.log("userEmail", userEmail.value) 
       const favoritestockResponse = await fetchStockData(userEmail.value)
 
       console.log("signInResponse", signInResponse)
@@ -146,8 +154,8 @@ export default {
         alert("로그인에 실패했습니다. 아이디나 비밀번호를 다시 확인하세요")
         return
       }
-
-      const sessionStorage = window.sessionStorage;
+      
+      
 
       const set_token_data = {
         "account" : userEmail.value,
@@ -160,9 +168,9 @@ export default {
       const favorite_stock_data = JSON.parse(sessionStorage.getItem("favorite_stock"))
       console.log("token_data", token_data)
       console.log("favorite_stock_data", favorite_stock_data)
-
+      
       router.push({name: "Dashboard"})
-    }
+    } 
 
     return {
       userEmail,

@@ -1,40 +1,35 @@
 <template>
   <div>
-    <apexcharts type="area" height="250" :options="state.chartOptions"
-                :series="state.series[selectedMarket] || []"></apexcharts>
+    <div>
+      <apexcharts type="area" height="280" :options="state.chartOptions"
+                  :series="state.series[selectedMarket] || []"></apexcharts>
+    </div>
+    <div>
+      <apexcharts type="bar" height="225" :options="state.volumeChartOption"
+                  :series="state.volumeChartseries[selectedMarket] || []"></apexcharts>
+    </div>
   </div>
-  <div>
-    <apexcharts type="bar" height="200" :options="state.volumeChartOption"
-                :series="state.volumeChartseries[selectedMarket] || []"></apexcharts>
-  </div>
-
   <div>
     <!-- 시장 선택 버튼 -->
     <div class="button-container">
-      <button v-for="market in markets"
-              :key="market.value"
-              @click="selectMarket(market.value); market.clicked = true"
-              :class="{ selected: selectedMarket === market.value }"
-              style="border-radius: 10px;">
+      <vsud-button v-for="market in markets" type="button"
+                   :key="market.value"
+                   @click="selectMarket(market.value); market.clicked = true"
+                   :class="['button-style', { selected: selectedMarket === market.value }]"
+      >
         {{ market.text }}
-      </button>
-<!--      <div class="selected-market">-->
-<!--        선택된 종목: {{ selectedMarket }}-->
-<!--      </div>-->
+      </vsud-button>
     </div>
-
-    <!-- 타임라인 선택 버튼 -->
     <div class="button-container" v-if="selectedMarket">
-      <button v-for="timeline in timelines"
-              :key="timeline.value"
-              @click="updateDataAndTimeline(timeline.value)"
-              :class="{ selected: selectedTimeline === timeline.value }"
-              style="border-radius: 10px;">
+      <vsud-button v-for="timeline in timelines" type="button"
+                   :key="timeline.value"
+                   @click="updateDataAndTimeline(timeline.value)"
+                   :class="['button-timeline', { selected: selectedTimeline === timeline.value }]"
+                   style="font-size: 15px">
         {{ timeline.text }}
-      </button>
+      </vsud-button>
     </div>
   </div>
-
 
 </template>
 
@@ -65,6 +60,12 @@ export default {
             autoScaleYaxis: true
           }
         },
+
+        stroke: {
+          colors: ['rgb(0,196,255)'],
+          width: 3,
+        },
+        colors: ['rgb(0,196,255)'],
 
         dataLabels: {
           enabled: false
@@ -144,7 +145,7 @@ export default {
         plotOptions: {
           bar: {
             columnWidth: '90%', // 막대의 두께를 조절
-            dataLabels:{
+            dataLabels: {
               position: 'top',
             },
           }
@@ -371,13 +372,23 @@ export default {
   flex-wrap: wrap;
 }
 
+.button-timeline {
+  margin: 5px;
+  padding-inline: 10px;
+  font-size: 20px;
+  border-radius: 10px;
+  background: linear-gradient(45deg, rgb(17, 105, 206), rgb(0, 196, 255));
+  transition: background 0.3s ease, opacity 0.3s ease;
+  opacity: 1;
+  color: #ffffff;
+}
+
+
 button {
-  margin: 1px;
   background-color: #4CAF50;
   color: white;
   border: none;
   cursor: pointer;
-  font-size: 15px;
   transition: background-color 0.5s ease;
 }
 
@@ -386,9 +397,20 @@ button:hover {
   background-color: #1d77e3;
 }
 
-/* 선택된 버튼 스타일 */
-button.selected {
-  background-color: #878c93;
+.button-style {
+  margin: 5px;
+  padding-inline: 10px;
+  font-size: 20px;
+  border-radius: 10px;
+  background: linear-gradient(45deg, rgb(17, 105, 206), rgb(0, 196, 255));
+  transition: background 0.3s ease, opacity 0.3s ease;
+  opacity: 1;
+  color: #ffffff;
+}
+
+.button-style:hover {
+  background: linear-gradient(45deg, rgba(255, 165, 0, 0.8), rgba(255, 0, 0, 0.93));
+  opacity: 0.7;
 }
 
 </style>
