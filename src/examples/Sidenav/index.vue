@@ -1,19 +1,18 @@
 <template>
   <aside
-      id="sidenav-main"
-      class="my-3 overflow-auto border-0 sidenav navbar navbar-vertical navbar-expand-xs border-radius-xl shadow-sm"
-      :class="$store.state.isRTL ? 'me-3 rotate-caret' : 'ms-3'"
-      :data-color="sidenavActiveBgColors"
-      style="background-color:#01275b !important;"
+    id="sidenav-main"
+    class="my-3 overflow-auto border-0 sidenav navbar navbar-vertical navbar-expand-xs border-radius-xl"
+    :class="$store.state.isRTL ? 'me-3 rotate-caret' : 'ms-3'"
+    :data-color="sidenavActiveBgColors"
   >
     <div class="sidenav-header">
       <i
-          id="iconSidenav"
-          class="top-0 p-3 cursor-pointer fas fa-times text-secondary opacity-5 position-absolute end-0 d-none d-xl-none"
-          aria-hidden="true"
+        id="iconSidenav"
+        class="top-0 p-3 cursor-pointer fas fa-times text-secondary opacity-5 position-absolute end-0 d-none d-xl-none"
+        aria-hidden="true"
       ></i>
       <a class="m-0 navbar-brand" href="/">
-<!--        <img :src="logo" class="navbar-brand-img h-100" alt="main_logo" />-->
+        <img :src="logo" class="navbar-brand-img h-100" alt="main_logo" />
         <span class="ms-1 font-weight-bold">Sam 9F Mo</span>
       </a>
     </div>
@@ -44,10 +43,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-
-.navbar-brand span {
-  color: white !important;
-}
-</style>

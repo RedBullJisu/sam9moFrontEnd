@@ -11,7 +11,7 @@
               <span class="text-sm font-weight-bolder">등락율</span>
             </h5>
             <h5 class="mb-0 font-weight-bolder">
-              {{ formatNumber(selectedStocks.current_trade.STCK_PRPR ? selectedStocks.current_trade.STCK_PRPR : selectedStocks.initial.stck_prpr) }}
+              {{ selectedStocks.current_trade.STCK_PRPR ? selectedStocks.current_trade.STCK_PRPR : selectedStocks.initial.stck_prpr }}
             </h5>
           </div>
         </div>
@@ -23,11 +23,9 @@
 <script>
 import { useStore } from 'vuex';
 import { watch,ref } from 'vue';
-import {formatNumber} from "chart.js/helpers";
 
 export default {
   name: "ChartName",
-  methods: {formatNumber},
 
   props: {
     selectedStock: {
