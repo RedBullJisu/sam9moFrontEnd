@@ -29,20 +29,32 @@ export default {
     AllStock,
     CandleStickChart
   },
+
   setup() {
     const store = useStore();
     const selectedStock = ref(null);
 
-    const myStocks = computed(() => store.state.StockPage.myStocks);
+    // const myStocks = computed(() => store.state.StockPage.myStocks);
+    const sessionStock = computed(() => store.state.StockPage.sessionStock)
     const allStocks = computed(() => store.state.StockPage.allStocks);
-    const sentiment = computed(()=>store.state.StockPage.sentiment);
+    // const sentiment = computed(() => store.state.StockPage.sentiment);
 
     const fetchAllStocks = async () => {
       try {
         await store.dispatch('StockPage/fetchAllStocks');
-        console.log("stockpage에서 fetchAllStocks액션 실행")
+        await store.dispatch('StockPage/fetchFavoriteStocks')
+        // console.log("stockpage에서 fetchAllStocks액션 실행")
       } catch (error) {
         console.error('API 에러:', error);
+      }
+    };
+
+    const alarmstock = async () => {
+      try {
+        await store.dispatch('StockPage/alarmstock')
+        console.log("alarmstock 실행")
+      } catch (error) {
+        console.log("alarmstock 에러")
       }
     };
 
@@ -75,7 +87,7 @@ export default {
 
     onMounted(async () => {
       await fetchAllStocks();
-
+      await alarmstock()
       // 주식 목록을 순회하면서 각 주식에 대한 여론 데이터를 가져오는 API 호출
       const allStocks = store.state.StockPage.allStocks;
       for (const stock of allStocks) {
@@ -91,15 +103,16 @@ export default {
     });
 
     return {
-      myStocks,
+      // myStocks,
       allStocks,
+      sessionStock,
       addToMyStocks,
       removeFromMyStocks,
       handleStockClick,
       selectedStock,
-      handleCloseClick
-    };
-  },
+      handleCloseClick,
+    }
+  }
 };
 </script>
 

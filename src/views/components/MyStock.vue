@@ -49,7 +49,7 @@
                                 </div>
                                 -->
                 <div class="d-flex flex-column justify-content-center ">
-                  <h6 class="mb-0 text-sm"><p>{{ stock.initial.COMPANY }}</p></h6>
+                  <h6 class="mb-0 text-sm"><p>{{ stock.initial.COMPANY}}</p></h6>
                 </div>
               </div>
             </td>
@@ -68,9 +68,9 @@
               <span class="text-secondary text-xs font-weight-bold">{{ stock.initial.hts_avls }}</span>
             </td>
             <td class="align-middle text-center">
-              <span class="text-secondary text-xs font-weight-bold">{{
-                  stock.current_trade.ACML_VOL ? stock.current_trade.ACML_VOL : stock.initial.acml_vol
-                }}</span>
+              <span class="text-secondary text-xs font-weight-bold">
+                {{stock.current_trade.ACML_VOL ? stock.current_trade.ACML_VOL : stock.initial.acml_vol }}
+              </span>
             </td>
             <td class="px-6 py-4 text-gray-500 border-b">
               <!-- 이 버튼을 클릭하면 해당 주식을 관심 종목에서 제거하는 액션 호출 -->
@@ -87,23 +87,56 @@
 </template>
 
 <script>
-// import img1 from "../../assets/img/team-2.jpg";
-// import VsudAvatar from "@/components/VsudAvatar.vue";
-// import VsudBadge from "@/components/VsudBadge.vue";
-import {mapState, mapActions} from "vuex";
+
+import {useStore} from "vuex";
+import {computed} from "vue";
+import axios from "axios";
 
 export default {
   name: "MyStock",
-  computed: {
-    ...mapState('StockPage', ['myStocks']),
-  },
-  methods: {
-    ...mapActions('StockPage', ['removeFromMyStocks', 'fetchStockChartData']),
-    onStockClick(stock) {
-      this.fetchStockChartData({stck_shrn_iscd: stock.id, interval: 'day'});
-      this.$emit('onStockClick', stock);
 
-    },
+  setup(_, { emit }) {
+    const store = useStore();
+    const myStocks = computed(() => store.state.StockPage.myStocks);
+    const sessionStock = computed( ()=> store.state.StockPage.sessionStock)
+
+    //session 객체 선언
+    const sessionStorage = window.sessionStorage;
+    const removeFromMyStocks = async (payload) => {
+      console.log("mystock확인", payload.id)
+      const favoriteStockBody = {
+        "account": JSON.parse(sessionStorage.getItem("token")).account,// 추후 계정 바꿔야함 세션에서 가져오는 아이디로,
+        "favorite_stock": payload.id
+      }
+      const url = "http://222.102.43.244:8094/favorite_stock/remove";
+      const response = await axios.post(url, favoriteStockBody).catch(() => null)
+      if (!response) return null
+
+      const result = response.data
+
+      sessionStorage.setItem("favoite_stock", JSON.stringify(result))
+      const data = sessionStorage.getItem("favorite_stock")
+      console.log("favoite_stock", JSON.parse(data))
+
+      store.dispatch('StockPage/removeFromMyStocks', payload);
+    };
+
+    const fetchStockChartData = (payload) => {
+      store.dispatch('StockPage/fetchStockChartData', payload);
+    };
+
+    const onStockClick = (stock) => {
+      fetchStockChartData({ stck_shrn_iscd: stock.id, interval: 'day' });
+      emit('onStockClick', stock);
+    };
+
+    return {
+      sessionStock,
+      myStocks,
+      removeFromMyStocks,
+      fetchStockChartData,
+      onStockClick,
+    };
   },
 };
 </script>
