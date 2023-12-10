@@ -11,6 +11,7 @@
     </div>
   </div>
   <div>
+
     <!-- 시장 선택 버튼 -->
     <div class="button-container">
       <button v-for="market in markets"
@@ -20,6 +21,8 @@
         {{ market.text }}
       </button>
     </div>
+
+    <!-- 타임라인 선택 버튼 -->
     <div class="button-container">
       <button v-for="timeline in timelines"
               :key="timeline.value"
@@ -87,7 +90,7 @@ export default {
               const day = date.getDate();
 
               // 한글 형식 날짜 문자열 반환
-              return `${year}년 ${month}월 ${day}일`;
+              return `${year}.${month}.${day}`;
 
             }
           }
@@ -101,8 +104,8 @@ export default {
               const year = date.getFullYear();
               const month = date.getMonth() + 1;
               const day = date.getDate();
-              const hours = date.getHours();
-              const minutes = date.getMinutes();
+              const hours = date.getHours().toString().padStart(2, '0');
+              const minutes = date.getMinutes().toString().padStart(2, '0');
 
               return `${year}년 ${month}월 ${day}일 ${hours}시 ${minutes}분`;
             }
@@ -141,7 +144,7 @@ export default {
             autoScaleYaxis: true
           }
         },
-        colors: ['#e33f1a'],
+        colors: ['rgba(4,190,12,0.57)'],
         plotOptions: {
           bar: {
             columnWidth: '90%', // 막대의 두께를 조절
@@ -168,7 +171,7 @@ export default {
               const month = date.getMonth() + 1;
               const day = date.getDate();
 
-              return `${year}년 ${month}월 ${day}일`;
+              return `${year}.${month}.${day}`;
             },
             tooltip: {
               x: {
@@ -234,14 +237,11 @@ export default {
 
     const selectedTimeline = ref('D1');
 
-
-
     const updateDataAndTimeline = async (timeline) => {
       selectedTimeline.value = timeline;
       await fetchData(timeline, state.series);
       await fetchVolumeData(timeline);
     };
-
 
     // dashboard 페이지 구동 시, 출력 되는 기본값 차트
     onMounted(() => {
@@ -266,7 +266,6 @@ export default {
       selectedTimeline.value ='D1'
       await updateDataAndTimeline(selectedTimeline.value);
     };
-
 
     const fetchData = async (timeline, series) => {
       let url;
@@ -365,7 +364,7 @@ export default {
       selectedTimeline,
       uppercaseMarket
     };
-    // 주석 추가
+
   }
 }
 </script>
@@ -384,26 +383,26 @@ export default {
   border: none; /* 테두리 제거 */
 }
 
-/* 시장 버튼 색상 */
+/* 시장 버튼 초기 색상 */
 .button-market {
-  background-color: rgb(11, 84, 196);
+  background-color: #0e61e0;
 }
 
 /* 시장 버튼 호버링 색상 */
 .button-market:hover {
-  background: linear-gradient(45deg, rgba(255, 165, 0, 0.53), rgba(255, 0, 0, 0.93));
-  opacity: 0.7;
+  background-color: #003D88FF;
+  opacity: 1;
 }
 
 /* 타임라인 버튼 초기 색상 */
 .button-timeline {
-  background-color: #0d6efd;
+  background-color: #0e61e0;
 }
 
 /* 타임라인 버튼 호버링 시, 색상 */
 .button-timeline:hover {
-  background: linear-gradient(45deg, rgba(255, 165, 0, 0.53), rgba(255, 0, 0, 0.93));
-  opacity: 0.7;
+  background-color: #003D88FF;
+  opacity: 1;
 }
 
 

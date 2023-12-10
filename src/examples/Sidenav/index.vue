@@ -4,7 +4,7 @@
       class="my-3 overflow-auto border-0 sidenav navbar navbar-vertical navbar-expand-xs border-radius-xl shadow-sm"
       :class="$store.state.isRTL ? 'me-3 rotate-caret' : 'ms-3'"
       :data-color="sidenavActiveBgColors"
-      style="background-color:#0b54c4 !important;"
+      style="background-color:#01275b !important;"
   >
     <div class="sidenav-header">
       <i
@@ -13,7 +13,7 @@
           aria-hidden="true"
       ></i>
       <a class="m-0 navbar-brand" href="/">
-        <img :src="logo" class="navbar-brand-img h-100" alt="main_logo" />
+<!--        <img :src="logo" class="navbar-brand-img h-100" alt="main_logo" />-->
         <span class="ms-1 font-weight-bold">Sam 9F Mo</span>
       </a>
     </div>

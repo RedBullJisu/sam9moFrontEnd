@@ -1,7 +1,7 @@
 import {createRouter, createWebHashHistory} from "vue-router";
 import Dashboard from "@/views/Dashboard.vue";
 import Billing from "@/views/News.vue";
-// import VirtualReality from "@/views/VirtualReality.vue";
+import VirtualReality from "@/views/VirtualReality.vue";
 import Profile from "@/views/Profile.vue";
 import Rtl from "@/views/Rtl.vue";
 import SignIn from "@/views/SignIn.vue";
@@ -15,6 +15,11 @@ const routes = [
         name: 'Home',
         component: SignIn,
     },
+    // {
+    //     path: "/",
+    //     name: "/",
+    //     redirect: "/signin",
+    // },
     {
         path: "/dashboard",
         name: "Dashboard",
@@ -30,11 +35,11 @@ const routes = [
         name: "Billing",
         component: Billing,
     },
-    // {
-    //     path: "/virtual-reality",
-    //     name: "Virtual Reality",
-    //     component: VirtualReality,
-    // },
+    {
+        path: "/virtual-reality",
+        name: "Virtual Reality",
+        component: VirtualReality,
+    },
     {
         path: "/profile",
         name: "Profile",
@@ -55,6 +60,7 @@ const routes = [
         name: "Sign Up",
         component: SignUp,
     },
+
 
 ];
 

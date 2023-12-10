@@ -18,12 +18,7 @@ import { ref } from 'vue';
 import { useStore } from 'vuex';
 
 export default {
-  name:"NotificationModal",
-  props: {
-    selectedStock: {
-      type: Object
-    }
-  },
+  props: ['stockId'],
   setup(props, { emit }) {
     const percentage = ref(0);
     const store = useStore();
@@ -38,12 +33,11 @@ export default {
       }
     };
 
-
-
     const saveNotification = () => {
-      store.commit('addAlertSetting', { stockId: props.selectedStock.id, percentage: percentage.value });
+      store.commit('SET_NOTIFICATION', { stockId: props.stockId, percentage: percentage.value });
       emit('close');
     };
+
     return {
       percentage,
       increasePercentage,

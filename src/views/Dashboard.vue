@@ -2,11 +2,11 @@
   <!-- 코스피,코스닥,코스피200 area 차트 -->
   <div class="py-4 container-fluid">
     <div class="row">
-      <div class="col-md-6">
+      <div class="col-md-5">
         <div class="card-header pb-3"
              style="border-top-left-radius: 15px;
              border-top-right-radius: 15px;
-             background-color: #0b54c4;">
+             background-color: #003D88FF;">
         </div>
         <div class="card-body shadow-lg" style="border-bottom-left-radius: 15px;
              border-bottom-right-radius: 15px; background-color: #ffffff">
@@ -14,73 +14,30 @@
         </div>
       </div>
 
-
       <!-- n-gram bubble 차트 -->
-      <div class="col-md-6">
+      <div class="col-md-7">
         <div class="card-header pb-3"
              style="border-top-left-radius: 15px;
              border-top-right-radius: 15px;
-             background-color: #0b54c4;">
+             background-color: #003D88FF;">
         </div>
-
         <div class="card-body shadow-lg" style="border-bottom-left-radius: 15px;
              border-bottom-right-radius: 15px; background-color: #ffffff">
           <h5 class="bubble-text">
-            오늘의 키워드
+            Today's KeyWord
           </h5>
           <NgramChart/>
         </div>
       </div>
-    </div>
-  </div>
 
-
-
-  <!-- NewsHashTag 차트 -->
-<!--  <div class="card-header pb-0"-->
-<!--       style="border-top-left-radius: 15px;-->
-<!--             border-top-right-radius: 15px;-->
-<!--             background-color: #0b54c4;">-->
-<!--  <div class="row justify-content-center">-->
-    <div class="col-lg-11">
-      <div class="card z-index-2 custom-height">
-        <NewsHashTagChart/>
+      <!-- NewsHashTag 차트 -->
+      <div class="col-lg-12 hashtag-height">
+        <div class="card z-index-2 custom-height">
+          <NewsHashTagChart/>
+        </div>
       </div>
     </div>
-<!--  </div>-->
-<!--  </div>-->
-
-  <!--  <div class="py-4 container-fluid">-->
-  <!--    <div class="row">-->
-  <!--      <div class="col-md-6">-->
-
-  <!--      </div>-->
-  <!--    </div>-->
-
-
-  <!-- NewsHashTag 차트 -->
-<!--    <div class="col-md-11">-->
-<!--      <div class=" hashtag-height" style="background-color: #0b54c4">-->
-<!--        <h5 style="color: #ffffff">뉴스 해시태그 순위</h5>-->
-<!--      </div>-->
-
-<!--      <div class="card-body shadow-lg" style="border-bottom-left-radius: 15px;-->
-<!--             border-bottom-right-radius: 15px; background-color: #ffffff">-->
-<!--        <NewsHashTagChart/>-->
-<!--      </div>-->
-<!--    </div>-->
-
-  <!--  <div class="row justify-content-center">-->
-  <!--    <div class="col-lg-11">-->
-  <!--      <div class="card z-index-2 custom-height">-->
-
-  <!--      </div>-->
-  <!--    </div>-->
-  <!--  </div>-->
-
-  <!--  <div>-->
-  <!--  <NewsPage />-->
-  <!--  </div>-->
+  </div>
 
 
 </template>
@@ -93,12 +50,10 @@ import BR from "../assets/img/icons/flags/BR.png";
 import NgramChart from "@/views/components/NgramChart.vue";
 import NewsHashTagChart from "@/views/components/NewsHashTag.vue";
 import StockAreaChart from "@/views/components/StockAreaChart.vue";
-import NewsPage from "@/views/News.vue";
 
 export default {
   name: "DashboardDefault",
   components: {
-    NewsPage,
     StockAreaChart,
     NewsHashTagChart,
     NgramChart,
@@ -169,28 +124,17 @@ export default {
 </script>
 <style scoped>
 
-
-.chart-width {
-  width: 100%;
-  padding-inline: 10px;
-  padding-bottom: 10px;
-}
-
-
 .custom-height {
   height: 150px; /* 뉴스해시태그 영역 높이 */
   margin-bottom: 30px
 }
 
-
 .bubble-text {
-  margin-left: 10px;
   margin-top: 10px;
 }
 
 .hashtag-height {
-  border-top-left-radius: 15px;
-  border-top-right-radius: 15px;
+  margin-top: 20px;
 }
 
 </style>

@@ -2,78 +2,62 @@
   <div class="card mb-4">
     <div class="card-body px-0 pt-0 pb-2">
       <div class="table-responsive p-0">
+
         <table class="table align-items-center justify-content-center mb-0">
           <thead>
-          <tr>
-            <th class="text-center text-xs font-weight-bolder opacity-7">
-              <button @click="selectTab('종합')">종합</button>
-            </th>
-            <th class="text-center text-xs font-weight-bolder opacity-7">
-              <button @click="handleNewsClick">뉴스</button>
-            </th>
-            <th class="text-center text-xs font-weight-bolder opacity-7">
-            </th>
-          </tr>
+          <div class="stock-layout d-flex flex-column align-items-start">
+            <div class="row">
+              <div class="col-md-6">
+                <button class="btn-synthesis" @click="selectTab('종합')">종합</button>
+              </div>
+              <div class="col-md-6">
+                <button class="btn-news" @click="handleNewsClick">뉴스</button>
+              </div>
+            </div>
+          </div>
           </thead>
 
           <tbody v-if="selectedTab === '종합'" style="height: 100px; overflow-y: auto;">
-          <tr>
-            <td class="align-middle text-center text-sm">
-              <p class="text-xs font-weight-bold mb-0">주식 전일 시가:{{ selectedStocks.initial.stck_prdy_oprc }}</p>
-            </td>
-            <td class="align-middle text-center text-sm">
-              <p class="text-xs font-weight-bold mb-0">주식 전일 최저가:{{ selectedStocks.initial.stck_prdy_lwpr }}</p>
-            </td>
-            <td class="align-middle text-center text-sm">
-              <p class="text-xs font-weight-bold mb-0">주식 전일 최고가:{{ selectedStocks.initial.stck_prdy_hgpr }}</p>
-            </td>
-          </tr>
-          <tr>
-            <td class="align-middle text-center text-sm">
-              <p class="text-xs font-weight-bold mb-0">전일종가:{{ selectedStocks.initial.stck_prpr }}</p>
-            </td>
-            <td class="align-middle text-center text-sm">
-              <p class="text-xs font-weight-bold mb-0">누적 거래량</p>
-            </td>
-            <td class="align-middle text-center text-sm">
-              <p class="text-xs font-weight-bold mb-0">누적 거래 대금</p>
-            </td>
-          </tr>
-          <tr>
-            <td class="align-middle text-center text-sm">
-              <p class="text-xs font-weight-bold mb-0">전일 거래량:{{ selectedStocks.initial.prdy_vol }}</p>
-            </td>
-            <td class="align-middle text-center text-sm">
-              <p class="text-xs font-weight-bold mb-0">전일시가</p>
-            </td>
-            <td class="align-middle text-center text-sm">
-              <p class="text-xs font-weight-bold mb-0">전일고가</p>
-            </td>
-          </tr>
-          <tr>
-            <td class="align-middle text-center text-sm">
-              <p class="text-xs font-weight-bold mb-0">PER:{{ selectedStocks.initial.per }}</p>
-            </td>
-            <td class="align-middle text-center text-sm">
-              <p class="text-xs font-weight-bold mb-0">PBR:{{ selectedStocks.initial.pbr }}</p>
-            </td>
-            <td class="align-middle text-center text-sm">
-              <p class="text-xs font-weight-bold mb-0">EPS:{{ selectedStocks.initial.eps }}</p>
-            </td>
-          </tr>
+          <div class="card-body px-0 pt-0 pb-2">
+            <div class="table-responsive p-0">
+              <table class="table align-items-center justify-content-center mb-0">
+                <thead>
+                <tr>
+                  <th class="text-center font-weight-bolder">주식 전일 시가:{{ formatNumber(selectedStocks.initial.stck_prdy_oprc) }}</th>
+                  <th class="text-center font-weight-bolder">주식 전일 최저가:{{ formatNumber(selectedStocks.initial.stck_prdy_lwpr) }}</th>
+                  <th class="text-center font-weight-bolder">주식 전일 최고가:{{ formatNumber(selectedStocks.initial.stck_prdy_hgpr) }}</th>
+                </tr>
+                <tr>
+                  <th class="text-center font-weight-bolder">전일종가:{{ formatNumber(selectedStocks.initial.stck_prpr) }}</th>
+                  <th class="text-center font-weight-bolder">누적 거래량</th>
+                  <th class="text-center font-weight-bolder">누적 거래 대금</th>
+                </tr>
+                <tr>
+                  <th class="text-center font-weight-bolder">전일 거래량:{{ formatNumber(selectedStocks.initial.prdy_vol) }}</th>
+                  <th class="text-center font-weight-bolder">전일시가</th>
+                  <th class="text-center font-weight-bolder">전일고가</th>
+                </tr>
+                <tr>
+                  <th class="text-center font-weight-bolder">PER:{{ selectedStocks.initial.per }}</th>
+                  <th class="text-center font-weight-bolder">PBR:{{ selectedStocks.initial.pbr }}</th>
+                  <th class="text-center font-weight-bolder">EPS:{{ selectedStocks.initial.eps }}</th>
+                </tr>
+                </thead>
+              </table>
+            </div>
+          </div>
           </tbody>
         </table>
 
-        <div @scroll="CompanyCheckScroll" style="height: 200px; overflow-y: auto;">
-          <div v-if="selectedTab === '뉴스'">
-            <div v-for="(news,index) in companynews" :key="index">
-              <h3>{{ news.news_title }}</h3>
-              <p>{{ news.content_summary }}</p>
-              <p>{{ news.keyword }}</p>
-            </div>
+        <div class="news-list" @scroll="CompanyCheckScroll;" v-if="selectedTab === '뉴스'">
+          <div v-for="(news,index) in companynews" :key="index">
+            <h4>{{ news.news_title }}</h4>
+            <p>{{ news.content_summary }}</p>
+            <p>{{ news.keyword }}</p>
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </template>
@@ -81,9 +65,11 @@
 <script>
 import {ref, onMounted} from "vue";
 import axios from "axios";
+import {formatNumber} from "chart.js/helpers";
 
 export default {
   name: "ChartInformation",
+  methods: {formatNumber},
   props: {
     selectedStock: {
       type: Object
@@ -131,7 +117,6 @@ export default {
       }
     }
 
-
     onMounted(() => {
       CompanyNews();
     });
@@ -149,3 +134,48 @@ export default {
 }
 
 </script>
+
+<style scoped>
+
+.btn-news {
+  padding-inline: 20px;
+  font-size: 20px;
+  border-radius: 10px;
+  transition: background 0.3s ease, opacity 0.3s ease;
+  color: #ffffff;
+  background-color: #0e61e0;
+  border: none; /* 테두리 제거 */
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.btn-news:hover {
+  background-color: #003D88FF;
+  opacity: 1;
+}
+
+.btn-synthesis {
+  padding-inline: 20px;
+  font-size: 20px;
+  border-radius: 10px;
+  transition: background 0.3s ease, opacity 0.3s ease;
+  color: #ffffff;
+  background-color: #0e61e0;
+  border: none; /* 테두리 제거 */
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.btn-synthesis:hover {
+  background-color: #003D88FF;
+  opacity: 1;
+}
+
+.news-list {
+  height: 200px;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+
+</style>
