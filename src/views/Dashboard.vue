@@ -2,43 +2,29 @@
   <!-- 코스피,코스닥,코스피200 area 차트 -->
   <div class="py-4 container-fluid">
     <div class="row">
-      <div class="col-md-5">
-        <div class="card-header pb-3"
-             style="border-top-left-radius: 15px;
-             border-top-right-radius: 15px;
-             background-color: #003D88FF;">
-        </div>
-        <div class="card-body shadow-lg" style="border-bottom-left-radius: 15px;
-             border-bottom-right-radius: 15px; background-color: #ffffff">
+      <div class="col-md-6">
+        <div class="card z-index-2 chart-width">
           <StockAreaChart/>
         </div>
       </div>
-
       <!-- n-gram bubble 차트 -->
-      <div class="col-md-7">
-        <div class="card-header pb-3"
-             style="border-top-left-radius: 15px;
-             border-top-right-radius: 15px;
-             background-color: #003D88FF;">
-        </div>
-        <div class="card-body shadow-lg" style="border-bottom-left-radius: 15px;
-             border-bottom-right-radius: 15px; background-color: #ffffff">
-          <h5 class="bubble-text">
-            Today's KeyWord
-          </h5>
+      <div class="col-md-6">
+        <div class="card z-index-2">
+          <h5 class="bubble-text">오늘의 키워드</h5>
           <NgramChart/>
-        </div>
-      </div>
-
-      <!-- NewsHashTag 차트 -->
-      <div class="col-lg-12 hashtag-height">
-        <div class="card z-index-2 custom-height">
-          <NewsHashTagChart/>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- NewsHashTag 차트 -->
+  <div class="row justify-content-center">
+    <div class="col-lg-11">
+      <div class="card z-index-2 custom-height">
+        <NewsHashTagChart/>
+      </div>
+    </div>
+  </div>
 
 </template>
 <script>
@@ -124,17 +110,23 @@ export default {
 </script>
 <style scoped>
 
+
+.chart-width {
+  width: 100%;
+  padding-inline: 10px;
+  padding-bottom: 10px;
+}
+
+
 .custom-height {
   height: 150px; /* 뉴스해시태그 영역 높이 */
   margin-bottom: 30px
 }
 
-.bubble-text {
-  margin-top: 10px;
-}
 
-.hashtag-height {
-  margin-top: 20px;
+.bubble-text {
+  margin-left: 10px;
+  margin-top: 10px;
 }
 
 </style>

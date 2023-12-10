@@ -14,7 +14,7 @@ export default {
     onMounted(() => {
       const fetchData = async () => {
         try {
-          const response = await axios.get('http://221.156.60.18:8072/keyword/bubble?date=202312&stock_limit=6&keyword_limit=7',{},{
+          const response = await axios.get('http://221.156.60.18:8092/keyword/bubble?date=202312&stock_limit=6&keyword_limit=7',{},{
             headers: {
               'Content-Type': 'application/json'
             }
@@ -29,8 +29,8 @@ export default {
 
 
             const container = root.container.children.push(am5.Container.new(root, {
-                width: am5.percent(100),
-                height: am5.percent(100),
+                width: am5.percent(115),
+                height: am5.percent(115),
                 layouts: root.verticalLayout
             }));
 
@@ -44,11 +44,8 @@ export default {
               childDataField: "children",
               idField: "name",
               linkWithField: "linkWith",
-              manyBodyStrength: -6,
-              centerStrength: 1,
-              minRadius: 29,
-              maxRadius: am5.percent(6),
-              nodePadding: 8
+              manyBodyStrength: -10,
+              centerStrength: 0.8
             }));
 
 
@@ -73,6 +70,6 @@ export default {
 #ngramchart {
   width: 100%;
   max-width: 100%;
-  height: 610px;
+  height: 570px;
 }
 </style>

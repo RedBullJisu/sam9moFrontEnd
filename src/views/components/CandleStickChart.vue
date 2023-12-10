@@ -1,28 +1,28 @@
 <template>
 <ChartName :selectedStock="selectedStock"></ChartName>
-  <div class="flex-between">
+  <div >
     <div>
-      <button class="btn-candle" @click="fetchChartData('day')">일봉</button>
-      <button class="btn-candle" @click="fetchChartData('week')">주봉</button>
-      <button class="btn-candle" @click="fetchChartData('month')">월봉</button>
-      <button class="btn-candle" @click="openNotificationModal">알림 설정</button>
-      <NotificationModal v-if="isNotificationModalOpen" @close="closeNotificationModal" :stockId="selectedStock.id"></NotificationModal>
+      <button @click="fetchChartData('day')">일봉</button>
+      <button @click="fetchChartData('week')">주봉</button>
+      <button @click="fetchChartData('month')">월봉</button>
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+        알림설정
+      </button>
+      <alarm-modal :selectedStock="selectedStock"></alarm-modal>
+      <button @click="$emit('close')">닫기</button>
     </div>
-    <i type="button" class="far fa-times-circle" style="font-size: 25px" @click="$emit('close')"></i>
-  </div>
-
-
     <apexcharts type="candlestick" height="400" :options="chartoptions.chartOptions" :series="processedChartData"></apexcharts>
     <ChartInformation :selectedStock="selectedStock"></ChartInformation>
+  </div>
 </template>
 
-
 <script>
-import {computed, reactive, watch, ref} from 'vue';
+import {computed, reactive, watch} from 'vue';
 import {useStore} from 'vuex';
 import VueApexCharts from 'vue3-apexcharts';
 import ChartName from "@/views/components/ChartName.vue";
 import ChartInformation from "@/views/components/ChartInformation.vue";
+import AlarmModal from "@/views/components/AlarmModal.vue";
 
 const intervalMap = {
   day: 'daily',
@@ -34,6 +34,7 @@ const intervalMap = {
 export default {
   name: "CandleStickChart",
   components: {
+    AlarmModal,
     ChartInformation,
     ChartName,
     apexcharts: VueApexCharts,
@@ -43,8 +44,6 @@ export default {
       type: Object
     }
   },
-  emits: ['close'],
-
   setup(props) {
     const state = reactive({
       series: [],
@@ -54,14 +53,13 @@ export default {
     const selectedInterval = reactive({value: 'day'});
 
     const chartData = computed(() => {
-
+      console.log("차트컴포넌트",props.selectedStock.initial)
       const stockType = props.selectedStock.market;
       const interval = selectedInterval.value;
       const intervalKey = intervalMap[interval];
 
       return store.getters[`StockPage/${intervalKey}${stockType.charAt(0).toUpperCase() + stockType.slice(1)}`];
     });
-
     const processedChartData = computed(() => {
       const series_list = []
       const processedData = chartData.value.stock_data.map(item => ({
@@ -113,9 +111,6 @@ export default {
             enabled: false,
           }
         },
-        xaxis: {
-          tickAmount: 9,
-        },
         y: {
           min: 0,
           max: 500,
@@ -134,18 +129,6 @@ export default {
         }
       }
     }
-    const isNotificationModalOpen = ref(false); // 알림 설정 모달창의 열림 여부
-
-    const openNotificationModal = () => {
-      // 알림 설정 모달창을 열기 위한 메서드
-      isNotificationModalOpen.value = true;
-    };
-
-    const closeNotificationModal = () => {
-      // 알림 설정 모달창을 닫기 위한 메서드
-      isNotificationModalOpen.value = false;
-    };
-
     const fetchChartData = (interval) => {
       selectedInterval.value = interval;
       store.dispatch('StockPage/fetchStockChartData', {
@@ -164,39 +147,32 @@ export default {
       chartoptions,
       fetchChartData,
       processedChartData,
-      openNotificationModal,
-      closeNotificationModal
-
     };
   }
 }
 </script>
 
 <style scoped>
-
-/* 일,주,월,알림설정 버튼 디자인 */
-.btn-candle {
-  padding-inline: 20px;
-  font-size: 20px;
-  border-radius: 10px;
-  transition: background 0.3s ease, opacity 0.3s ease;
-  color: #ffffff;
-  background-color: #0e61e0;
-  border: none; /* 테두리 제거 */
-  margin-top: 10px;
-  margin-bottom: 10px;
-  margin-right: 10px;
-}
-
-/* 일,주,월,알림설정 버튼 호버링  */
-.btn-candle:hover {
-  background-color: #003D88FF;
-  opacity: 1;
-}
-
-/* X닫기 버튼 */
-.flex-between {
+.button-container {
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+}
+
+.selected-stock {
+  font-size: 20px;
+  margin-left: 10px;
+}
+
+button {
+  margin: 5px;
+  padding: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
 }
 </style>

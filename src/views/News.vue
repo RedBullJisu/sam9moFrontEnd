@@ -7,13 +7,15 @@
 
             <!-- 뉴스 카테고리 버튼 생성 -->
             <button v-for="(value, category) in categories" :key="value" class="nav-item"
-                    :class="['nav-link', { 'active': selectedCategory.value === value, 'selected': selectedCategory.value === value }]"
+                    :class="['nav-link', { 'active': selectedCategory.value === value }]"
                     @click="() => selectCategory(value)"
                     role="tab"
                     :aria-selected="selectedCategory.value === value ? 'true' : 'false'"
             >
               {{ category }}
             </button>
+
+
           </div>
         </div>
 
@@ -65,7 +67,6 @@ import axios from "axios";
 import {ref, onMounted, computed} from "vue";
 export default {
   name: "NewsPage",
-
   setup() {
     const categories = {"전체": 'whole', "경제": 'money', "사회": 'society', "정치": 'politics'};
     const selectedCategory = ref('전체');
@@ -180,7 +181,7 @@ export default {
 
 /* 호버링 상태 */
 .nav-item.nav-link:hover {
-  background-color: #0e61e0; /* 배경색 */
+  background-color: #4CAF50; /* 배경색 */
 }
 
 /* 뉴스 목록 출력 영역 */
@@ -242,7 +243,7 @@ export default {
 /* 상세뉴스 보기 버튼 */
 .btn-set {
   border-radius: 10px;
-  background-color: #0e61e0;
+  background-color: #4CAF50;
   color: white;
   border: none;
   cursor: pointer;
@@ -250,12 +251,12 @@ export default {
   margin-top: 30px;
   margin-left: 5px;
 
-  transition: background-color 0.3s ease;
+  transition: background-color 0.5s ease;
 }
 
 /* 버튼 호버링 색상 */
 button:hover {
-  background-color: #003D88FF;
+  background-color: #1d77e3;
 }
 
 /* 감성분석 텍스트 */
@@ -269,8 +270,4 @@ button:hover {
   padding-left: 10px;
   padding-bottom: 10px;
 }
-.nav-item{
-  margin-left: 5px;
-}
-
 </style>

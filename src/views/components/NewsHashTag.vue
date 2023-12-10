@@ -1,13 +1,12 @@
 <template>
   <div style="text-align: center;">
-    <div class="hashtag-height" style="background-color: #003D88FF">
-      <h5 style="color: #ffffff">뉴스 해시태그 순위</h5>
+    <div>
+      <h5 style="margin-top: 10px;">뉴스 해시태그 순위</h5>
     </div>
-
-    <div v-if="keywordCountList.length > 0" class="button-container" style="overflow: auto;">
-      <div class="d-flex p-3 gap-2 mb-3 text-white justify-content-center flex-wrap " style="width: 100%">
+    <div v-if="keywordCountList.length > 0" class="button-container " style="overflow: auto;">
+      <div class="d-flex p-3 gap-2 mb-3 text-white justify-content-center flex-wrap" style="width: 100%">
         <div id="hash" class="btn-group">
-          <vsud-button type="button"
+          <vsud-button type="button" variant="gradient"
                        v-for="(item, index) in keywordCountList"
                        :key="index"
                        class="button-style"
@@ -52,7 +51,7 @@ export default {
   },
   methods: {
     fetchKeywordCountList(date) {
-      axios.get(`http://221.156.60.18:8072/keyword/count?date=${date}`)
+      axios.get(`http://221.156.60.18:8092/keyword/count?date=${date}`)
           .then((response) => {
             this.keywordCountList = response.data.keyword_count_list;
           })
@@ -75,33 +74,30 @@ button {
   border-radius: 15px;
   margin-right: 5px;
   padding: 15px;
-  background-color: #0e61e0;
-  //color: white;
+  background-color: #4CAF50;
+  color: white;
   border: none;
   cursor: pointer;
   transition: background-color 0.5s ease;
 }
 
 button:hover {
-  background-color: #003D88FF;
+  background-color: #1d77e3;
 }
 
+.button-text{
+  font-weight: lighter;
+}
 
 .button-style {
+  background: linear-gradient(45deg, #e600ff, #9710f1);
   transition: background 0.3s ease, opacity 0.3s ease;
   opacity: 1;
 }
 
 .button-style:hover {
-  //background: linear-gradient(45deg, rgb(0, 78, 109), rgb(30, 148, 160));
-  //opacity: 1;
+  background: linear-gradient(45deg, rgba(72, 160, 69, 0.57), rgba(255, 251, 7, 0.73));
+  opacity: 0.7;
 }
-
-.hashtag-height{
-  border-top-left-radius: 15px;
-  border-top-right-radius: 15px;
-}
-
-
 
 </style>

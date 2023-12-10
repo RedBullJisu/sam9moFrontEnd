@@ -6,6 +6,11 @@ const STOCK_URL = "http://121.179.83.68:8881/stock_api";
 // 차트 URL 주소
 const CHART_API_BASE_URL = 'http://221.156.60.18:8081';
 
+// 세션 객체 생성
+const sessionStorage = window.sessionStorage
+
+// const Alarm_url = "http://221.156.60.18:9101/alarm";
+
 const STOCK_CODES = {
     // 코스피 리스트
     kospi: ['005930', '373220', '000660', '207940', '005935',
@@ -52,10 +57,10 @@ const intervalMap = {
     week: 'week_stock',
     month: 'month_stock'
 };
-
 //스토어 상태 정의
 const state = {
-    allStocks: [], // 모든 주식
+    Stocks: [], // API로 가져온 80개 종목
+    allStocks: [], // 모든 종목 주식
     myStocks: [], // 관심 주식
     sentiment: [], // 종목의 여론 데이터
     cachedSentiments: {}, // 여론 데이터를 캐싱하는 객체
@@ -66,19 +71,28 @@ const state = {
     dailyKosdaq: {_id: '', stock_data: []}, // 코스닥 일봉차트
     weekKosdaq: {_id: '', stock_data: []}, // 코스닥 주봉차트
     monthKosdaq: {_id: '', stock_data: []},  // 코스닥 월봉차트
-    stockAlarm: [], // 사용자가 설정한 주식 알림을 저장하는 배열
-    priceChanges: [] // API로부터 받은 주식 가격 정보를 저장
+    alertSettings: [], // 알림 설정을 저장하는 배열
+    stockalarm: [], // 알림기능 테스트 배열
+    sessionMyStock: [], // 세션에서 가져온 사용자의 관심주식
 };
 
 // 스토어 변이(Mutation) 정의
 const mutations = {
+    // API로 가져온 80개 종목 업테이트
+    updateStock(state, stocks) {
+        state.Stocks = stocks
+    },
     // 모든 주식 목록을 업데이트
     updateAllStocks(state, stocks) {
         state.allStocks = stocks;
     },
-    // 관심 주식 목록을 업데이트
-    updateMyStocks(state, stocks) {
-        state.myStocks = stocks;
+    // 세션에서 가져온 관심종목 업데이트
+    updatesessionMyStock(state, favoriteStocks) {
+        state.sessionMyStock = favoriteStocks;
+    },
+    // 세션에서 관심종목 관심종목으로 변환
+    updataMyStock(state, list) {
+        state.myStocks = list
     },
     //일봉, 주봉, 월봉 차트 업데이트
     updateChartData(state, {type, data}) {
@@ -99,6 +113,7 @@ const mutations = {
     // 관심주식 추가
     addToMyStocks(state, stock) {
         state.myStocks.push(stock);
+        console.log("Stockpage의 뮤테이션addToMyStocksㄴㅇㄹㄴㅇㄹㄴㄹㄴㅇㄹㄴㅇㄹㄴㅇㄹㄴㅇㄹㄴㄹㄴㅇㄹㅇㄴㄹㅇㄴㄹㅇㄴㄹ",stock)
         state.allStocks = state.allStocks.filter(s => s.id !== stock.id);
     },
     // 관심주식제거
@@ -112,22 +127,52 @@ const mutations = {
     updateCurrentMarket(state, market) {
         state.currentMarket = market;
     },
-    // 스토어 상태를 초기화
-    resetState(state) {
-        state.allStocks = [];  // 모든 주식 초기화
-        state.myStocks = [];  // 관심 주식 초기화
-        state.dailykospi = {};  // 코스피 일봉 차트 초기화
-        state.weeklykospi = {};  // 코스피 주봉 차트 초기화
-        state.monthlyKospi = {};  // 코스피 월봉 차트 초기화
-        state.dailyKosdaq = {};  // 코스닥 일봉 차트 초기화
-        state.weeklyKosdaq = {};  // 코스닥 주봉 차트 초기화
-        state.monthlyKosdaq = {};  // 코스닥 월봉 차트 초기화
-        state.stockAlarm = [];  // 알림 설정 초기화
-        state.priceChanges = [];  // 주식 가격 정보 초기화
-        state.sentiment = []; // 여론 데이터 초기화
-        state.priceChanges = {}; //
+    // 알림 설정을 추가
+    addAlertSetting(state, alertSetting) {
+        alertSetting.alerted = false; // 알림 발생 여부를 나타내는 속성 추가
+        state.alertSettings.push(alertSetting);
     },
 
+    // 알림 설정을 제거
+    removeAlertSetting(state, stockId) {
+        state.alertSettings = state.alertSettings.filter(setting => setting.stockId !== stockId);
+    },
+
+    // 모든 알림 설정의 alerted 속성을 false로 초기화
+    resetAlerted(state) {
+        state.alertSettings.forEach((setting) => {
+            setting.alerted = false;
+        });
+    },
+    updateAlarm(state, {stck_shrn_iscd, response}) { // 알림기능 테스트용
+        // 해당 종목에 대한 알림 정보 업데이트 또는 추가
+        const index = state.stockalarm.findIndex(item => item.stck_shrn_iscd === stck_shrn_iscd);
+
+        if (index !== -1) {
+            // 이미 있는 경우 업데이트
+            state.stockalarm[index].response = response;
+        } else {
+            // 없는 경우 추가
+            state.stockalarm.push({stck_shrn_iscd, response});
+        }
+    },
+
+    // 스토어 상태를 초기화
+    resetState(state) {
+        state.Stocks = []; // API로 가져온 80개 종목 초기화
+        state.allStocks = [];  // 모든 종목 주식 초기화
+        state.myStocks = [];  // 관심 주식 초기화
+        state.dailyKospi = {_id: '', stock_data: []};  // 코스피 일봉 차트 초기화
+        state.weekKospi = {_id: '', stock_data: []};  // 코스피 주봉 차트 초기화
+        state.monthKospi = {_id: '', stock_data: []};  // 코스피 월봉 차트 초기화
+        state.dailyKosdaq = {_id: '', stock_data: []};  // 코스닥 일봉 차트 초기화
+        state.weekKosdaq = {_id: '', stock_data: []};  // 코스닥 주봉 차트 초기화
+        state.monthKosdaq = {_id: '', stock_data: []};  // 코스닥 월봉 차트 초기화
+        state.alertSettings = [] // 알람 기능초기화
+        state.sentiment = []; // 여론 데이터 초기화
+        state.cachedSentiments = {} // 여론 데이터를 캐싱하는 객체
+
+    },
 
     // // SET_NOTIFICATION: 사용자가 알림을 설정할 때 호출되는 뮤테이션. 주식의 고유번호와 퍼센트를 인자로 받아 stockAlarm 상태를 변경
     // SET_NOTIFICATION(state, {stockId, percentage}) {
@@ -164,10 +209,11 @@ const actions = {
                 console.log('API 응답에 데이터가 없습니다.');
                 return;
             }
-            //
             const stocks = Object.values(response.data);
-            console.log("모든주식정보 API응답", stocks)
+            // console.log("모든주식정보 API응답", stocks)
 
+            commit("updateStock", stocks)
+            // console.log("API를 통해 불러온 모든주식정보", stocks)
             const processedStocks = stocks.map(stock => {
                 const id = stock.initial.stck_shrn_iscd;
                 // 코스피 코스닥 판단
@@ -180,32 +226,33 @@ const actions = {
                         : [];
 
                 return {id, ...stock, data, market: marketType};
-            });
-            const sortedStocks = processedStocks.sort((a, b) => {
-                return a.initial.COMPANY.localeCompare(b.initial.COMPANY);
+
             });
 
             // 현재 선택된 시장에 해당하는 주식만 필터링
             let filteredStocks = processedStocks.filter(stock => STOCK_CODES[state.currentMarket].includes(stock.initial.stck_shrn_iscd));
             // 관심 주식 목록에 있는 주식은 제외
-            filteredStocks = filteredStocks.filter(stock => !state.myStocks.some(myStock => myStock.id === stock.id));
-            commit('updateAllStocks', filteredStocks, sortedStocks);
+            filteredStocks = filteredStocks.filter(stock => !state.myStocks.some(myStocks => myStocks.initial.stck_shrn_iscd === stock.initial.stck_shrn_iscd));
+            commit('updateAllStocks', filteredStocks);
+            // console.log("관심 주식 목록에 있는 주식은 제외",filteredStocks)
 
+            // updataMyStock을 최신화 시켜줌(id, market)
             const updatedMyStocks = state.myStocks.map((stock) =>
                 processedStocks.find((s) => s.id === stock.id) || stock
             );
-            commit('updateMyStocks', updatedMyStocks);
-            console.log("fetchAllStocks액션이 실행되었습니다.")
 
-            if (state.currentMarket === 'kospi') {
-                state.myStocks.forEach((stock) => {
-                    delete state.dailyKospi[stock.id];
-                });
-            } else {
-                state.myStocks.forEach((stock) => {
-                    delete state.dailyKosdaq[stock.id];
-                });
-            }
+            commit('updataMyStock', updatedMyStocks);
+            // console.log("updateMyStocks최신화",updatedMyStocks)
+
+            // if (state.currentMarket === 'kospi') {
+            //     state.sessionStock.forEach((stock) => {
+            //         delete state.dailyKospi[stock.id];
+            //     });
+            // } else {
+            //     state.sessionStock.forEach((stock) => {
+            //         delete state.dailyKosdaq[stock.id];
+            //     });
+            // }
         } catch (error) {
             console.error('API 에러:', error);
             setTimeout(() => {
@@ -213,10 +260,12 @@ const actions = {
             }, 5000);
         }
     },
-    // 특정 주식을 관심 주식 목록에 추가하는 액션
+
+    // // 특정 주식을 관심 주식 목록에 추가하는 액션
     addToMyStocks({commit}, stock) {
         commit('addToMyStocks', stock);
     },
+
     // 특정 주식을 관심 주식 목록에서 제거하는 액션
     removeFromMyStocks({commit}, stock) {
         commit('removeFromMyStocks', stock);
@@ -229,17 +278,84 @@ const actions = {
             commit('updateAllStocks', filteredStocks);
         });
     },
+    // 알림 설정을 저장하는 액션
+    async saveAlertSetting({commit}, alertSetting) {
+        // 백엔드 API를 호출하여 알림 설정을 서버에 저장
+        const response = await axios.get("http://221.156.60.18:9101/alarm", alertSetting);
+
+        // API 호출이 성공하면
+        if (response.status === 200) {
+            // 'addAlertSetting' 뮤테이션을 커밋하여 Vuex 스토어의 상태를 업데이트
+            commit('addAlertSetting', alertSetting);
+        } else {
+            // API 호출이 실패하면 오류 메시지를 콘솔에 출력
+            console.error('API실패');
+        }
+    },
+
+    // 알람기능 텟트
+    // async alarmstock({commit}, {stockid, morLes, username, price}) {
+    //     const url = "http://221.156.60.18:9101/alarm";
+    //     try {
+    //         const response = await axios.get(url);
+    //         if (!response.data || !response.data.length) {
+    //             return null;
+    //         }
+    //         console.log("알림기능 axios 데이터확인", response.data);
+    //         commit('updatealarm', {stockid, response: response.data});
+    //         console.log("updatealarm뮤테이션실행후 state.stocklarm값", state.stockalarm)
+    //         const stockData = response.data.find(item => item.stock_num === stockid);
+    //         console.log("stockData확인", stockData.percent_change)
+    //         const isplus = function (stockData, price) {
+    //             return stockData >= price;
+    //         };
+    //
+    //         const isminus = function (stockDatae, price) {
+    //             return stockData <= price;
+    //         };
+    //
+    //         if (stockData) {
+    //             if (morLes === "+") {
+    //                 if (isplus(stockData.percent_change, price)) {
+    //                     window.alert(`${username}님이 선택한 ${stockData.stock_num}이 ${stockData.percent_change}${price} 이상입니다.`);
+    //                 }
+    //             } else {
+    //                 if (isminus(stockData.percent_change, price)) {
+    //                     window.alert(`${username}님이 선택한 ${stockData.stock_num}이 ${stockData.percent_change}${price} 이하입니다.`);
+    //                 }
+    //             }
+    //         } else {
+    //             window.alert("해당하는 코드 없습니다.");
+    //         }
+    //     } catch (error) {
+    //         console.error("Error occurred:", error);
+    //         return null;
+    //     }
+    // },
+
+
     // 여론 데이터를 가져오는 액션
-    async fetchSentiment({commit}, stck_shrn_iscd) {
-        try {
-            const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-            console.log("이건 확인111110", stck_shrn_iscd)
-            console.log("날짜", today)
-            const response = await axios.get(`http://221.156.60.18:8092/sentiment/count/${stck_shrn_iscd}?date=${today}`);
-            commit('updateSentiment', response.data);
-        } catch (error) {
-            console.error(error);
-            commit('updateSentiment', []);
+    async fetchSentiment({commit, state}, stck_shrn_iscd) {
+        // 캐시된 데이터가 있는지 확인
+        if (state.cachedSentiments[stck_shrn_iscd]) {
+            // 캐시된 데이터가 있으면 해당 데이터를 상태에 업데이트
+            commit('updateSentiment', state.cachedSentiments[stck_shrn_iscd]);
+        } else {
+            try {
+                // 오늘 날짜를 변환하여 API에 요청
+                const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+                const response = await axios.get(`http://221.156.60.18:8092/sentiment/count/${stck_shrn_iscd}?date=${today}`);
+
+                // API 응답으로 받은 여론 데이터를 상태에 업데이트
+                commit('updateSentiment', response.data);
+
+                // 가져온 여론 데이터를 캐시에 저장
+                commit('cacheSentiment', {stck_shrn_iscd, sentimentData: response.data});
+            } catch (error) {
+                // 오류 발생 시 콘솔에 오류 로그 출력 및 상태 초기화
+                console.error(error);
+                commit('updateSentiment', []);
+            }
         }
     },
     // 주식의 차트 데이터 가져오는 액션
@@ -266,12 +382,31 @@ const actions = {
                         stock_data: response.data.stock_data
                     };
                     commit('updateChartData', {type: `${marketType}_${mappedInterval}`, data});
-                    console.log("fetchStockChartData실행 후 updateChartData뮤테이션으로 이동", data)
+                    // console.log("fetchStockChartData실행 후 updateChartData뮤테이션으로 이동", data)
 
                 }
             } catch (error) {
                 console.error(`차트 데이터를 가져오는데 실패했습니다: ${error}`);
             }
+        }
+    },
+    // 세션에서 사용자의 관심종목을 가져옴
+    fetchFavoriteMyStocks({commit, state}) {
+        const favoriteStocks = JSON.parse(sessionStorage.getItem(`favorite_stock`));
+        if (favoriteStocks) {
+            const list = [];
+            commit('updatesessionMyStock', favoriteStocks);
+            for (let i = 0; i < state.sessionMyStock.favorite_stock.length; i++) {
+                for (let j = 0; j < state.Stocks.length; j++) {
+                    if (state.Stocks[j].initial.stck_shrn_iscd == Object.keys(state.sessionMyStock.favorite_stock[i])[0]) {
+                        list.push(state.Stocks[j]);
+                    }
+                }
+            }// initial.stck_shrn_iscd
+            commit('updataMyStock', list);
+            // console.log("mystock뮤테이션으로 넘어가는 list",state.myStocks)
+        } else {
+            console.log("사용자의 관심종목을 가져오는데 실패하였습니다.")
         }
     },
 
@@ -289,22 +424,30 @@ const getters = {
     dailyKosdaq: state => state.dailyKosdaq,
     weekKosdaq: state => state.weekKosdaq,
     monthKosdaq: state => state.monthKosdaq,
-    // 모든 주식 목록을 반환
-    getAllStocks: (state) => state.allStocks,
+
+    filteredAllStocks(state) {
+        return state.allStocks.filter(stock => !state.myStocks.some(myStock => myStock.initial.stck_shrn_iscd === stock.initial.stck_shrn_iscd));
+    },
+    // // 현재 선택된 시장의 주식 목록을 필터링하여 반환하는 게터
+    // getCurrentMarketStocks: (state) => {
+    //     const filteredStocks = state.allStocks.filter(stock => STOCK_CODES[state.currentMarket].includes(stock.initial.stck_shrn_iscd));
+    //     return filteredStocks;
+    // },
     // 관심 주식 목록을 반환
     getMyStocks: (state) => state.myStocks,
-    // 여론 반환
-    getsentiment: (state) => state.sentiment,
+    // 여론 데이터를 반환하는 게터
+    getsentiment: (state) => (stockCode) => {
+        // 캐시된 데이터가 있는지 확인하고 반환
+        if (state.cachedSentiments[stockCode]) {
+            return state.cachedSentiments[stockCode];
+        }
+        // 캐시된 데이터가 없을 경우 원격 서버에서 가져와 반환
+        return state.sentiment.find((data) => data.stockCode === stockCode) || [];
+    },
     // 주어진 종류(type)와 주식 코드(stockCode)에 해당하는 차트 데이터를 반환하는 게터
     getChartData: (state) => (type, stock) => getSpecificChartData(state, type, stock),
     // 현재 선택된 시장 정보를 반환(KOSPI, KOSDAQ)
     getCurrentMarket: (state) => state.currentMarket,
-
-    // 현재 선택된 시장의 주식 목록을 필터링하여 반환하는 게터
-    getCurrentMarketStocks: (state) => {
-        const filteredStocks = state.allStocks.filter(stock => STOCK_CODES[state.currentMarket].includes(stock.initial.stck_shrn_iscd));
-        return filteredStocks;
-    },
 
 };
 

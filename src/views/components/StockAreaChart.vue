@@ -1,44 +1,42 @@
 <template>
   <div>
     <div>
-      <h5 class="Area-text bold-text">{{`${uppercaseMarket}지수`}}</h5>
       <apexcharts type="area" height="280" :options="state.chartOptions"
                   :series="state.series[selectedMarket] || []"></apexcharts>
     </div>
     <div>
-      <apexcharts type="bar" height="220" :options="state.volumeChartOption"
+      <apexcharts type="bar" height="225" :options="state.volumeChartOption"
                   :series="state.volumeChartseries[selectedMarket] || []"></apexcharts>
     </div>
   </div>
   <div>
-
     <!-- 시장 선택 버튼 -->
     <div class="button-container">
-      <button v-for="market in markets"
-              :key="market.value"
-              @click="selectMarket(market.value)"
-              :class="['button', 'button-market', { 'button-selected': selectedMarket.value === market.value }]">
+      <vsud-button v-for="market in markets" type="button"
+                   :key="market.value"
+                   @click="selectMarket(market.value); market.clicked = true"
+                   :class="['button-style', { selected: selectedMarket === market.value }]"
+      >
         {{ market.text }}
-      </button>
+      </vsud-button>
     </div>
-
-    <!-- 타임라인 선택 버튼 -->
-    <div class="button-container">
-      <button v-for="timeline in timelines"
-              :key="timeline.value"
-              @click="updateDataAndTimeline(timeline.value)"
-              :class="['button', 'button-timeline', { 'button-selected': selectedTimeline.value === timeline.value }]"
-              style="font-size: 15px">
+    <div class="button-container" v-if="selectedMarket">
+      <vsud-button v-for="timeline in timelines" type="button"
+                   :key="timeline.value"
+                   @click="updateDataAndTimeline(timeline.value)"
+                   :class="['button-timeline', { selected: selectedTimeline === timeline.value }]"
+                   style="font-size: 15px">
         {{ timeline.text }}
-      </button>
+      </vsud-button>
     </div>
   </div>
+
 </template>
 
 <script>
 import VueApexCharts from 'vue3-apexcharts'
 import axios from "axios";
-import {ref, reactive, onMounted, computed} from 'vue'
+import {ref, reactive, onMounted} from 'vue'
 
 export default {
   name: "StockAreaChart",
@@ -53,7 +51,6 @@ export default {
         kosdaq: [],
         kospi200: [],
       },
-
       chartOptions: {
         chart: {
           id: 'area-datetime',
@@ -65,10 +62,10 @@ export default {
         },
 
         stroke: {
-          colors: ['rgb(255,21,0)'],
+          colors: ['rgb(0,196,255)'],
           width: 3,
         },
-        colors: ['rgb(255,0,0)'],
+        colors: ['rgb(0,196,255)'],
 
         dataLabels: {
           enabled: false
@@ -90,7 +87,7 @@ export default {
               const day = date.getDate();
 
               // 한글 형식 날짜 문자열 반환
-              return `${year}.${month}.${day}`;
+              return `${year}년 ${month}월 ${day}일`;
 
             }
           }
@@ -104,8 +101,8 @@ export default {
               const year = date.getFullYear();
               const month = date.getMonth() + 1;
               const day = date.getDate();
-              const hours = date.getHours().toString().padStart(2, '0');
-              const minutes = date.getMinutes().toString().padStart(2, '0');
+              const hours = date.getHours();
+              const minutes = date.getMinutes();
 
               return `${year}년 ${month}월 ${day}일 ${hours}시 ${minutes}분`;
             }
@@ -144,7 +141,7 @@ export default {
             autoScaleYaxis: true
           }
         },
-        colors: ['rgba(4,190,12,0.57)'],
+        colors: ['#e33f1a'],
         plotOptions: {
           bar: {
             columnWidth: '90%', // 막대의 두께를 조절
@@ -167,17 +164,19 @@ export default {
             formatter: function (value) {
 
               const date = new Date(value);
+
               const year = date.getFullYear();
               const month = date.getMonth() + 1;
               const day = date.getDate();
 
-              return `${year}.${month}.${day}`;
+              return `${year}년 ${month}월 ${day}일`;
             },
             tooltip: {
               x: {
                 formatter: function (value) {
 
                   const date = new Date(value);
+
                   const year = date.getFullYear();
                   const month = date.getMonth() + 1;
                   const day = date.getDate();
@@ -235,7 +234,7 @@ export default {
       {value: 'YTD', text: '1년'},
     ];
 
-    const selectedTimeline = ref('D1');
+    const selectedTimeline = ref(null);
 
     const updateDataAndTimeline = async (timeline) => {
       selectedTimeline.value = timeline;
@@ -245,26 +244,18 @@ export default {
 
     // dashboard 페이지 구동 시, 출력 되는 기본값 차트
     onMounted(() => {
-      selectMarket(selectedMarket.value);
-      updateDataAndTimeline(selectedTimeline.value);
-      // selectMarket('kospi');
-      // updateDataAndTimeline('D1');
+      selectMarket('kospi');
+      updateDataAndTimeline('D1');
     });
 
-    const selectedMarket = ref('kospi');
+    const selectedMarket = ref(null);
 
-    const uppercaseMarket = computed(() => {
-      return selectedMarket.value.toUpperCase();
-    });
-
-    const selectMarket = async (market) => {
+    const selectMarket = (market) => {
       if (selectedMarket.value !== market) {
         state.series[market] = [];
         state.volumeChartseries[market] = [];
       }
       selectedMarket.value = market;
-      selectedTimeline.value ='D1'
-      await updateDataAndTimeline(selectedTimeline.value);
     };
 
     const fetchData = async (timeline, series) => {
@@ -305,7 +296,7 @@ export default {
         series[selectedMarket.value] = [];
       }
 
-      series[selectedMarket.value] = [{name: selectedMarket.value.toUpperCase(), data: processedData}];
+      series[selectedMarket.value] = [{name: selectedMarket.value, data: processedData}];
     };
     const fetchVolumeData = async (timeline) => {
       let url;
@@ -323,9 +314,11 @@ export default {
         }
       });
 
+
       const AreaChartData = response.data;
       const processedData = [];
 
+      console
       if (AreaChartData.data) {
         AreaChartData.data.forEach(data => {
           const timestamp = new Date(data.timestamp * 1000);
@@ -338,10 +331,12 @@ export default {
         });
       }
 
+
       if (!state.volumeChartseries[selectedMarket.value]) {
         state.volumeChartseries[selectedMarket.value] = [];
       }
-      state.volumeChartseries[selectedMarket.value] = [{name: selectedMarket.value.toUpperCase(), data: processedData}];
+
+      state.volumeChartseries[selectedMarket.value] = [{name: selectedMarket.value, data: processedData}];
     };
 
     const updateData = async (timeline) => {
@@ -361,51 +356,14 @@ export default {
       selectedMarket,
       updateData,
       updateDataAndTimeline,
-      selectedTimeline,
-      uppercaseMarket
+      selectedTimeline
     };
-
+    // 주석 추가
   }
 }
 </script>
 
 <style scoped>
-
-/* 공통 버튼 스타일 */
-.button {
-  margin: 5px;
-  padding-inline: 10px;
-  font-size: 20px;
-  border-radius: 10px;
-  transition: background 0.3s ease, opacity 0.3s ease;
-  opacity: 1;
-  color: #ffffff;
-  border: none; /* 테두리 제거 */
-}
-
-/* 시장 버튼 초기 색상 */
-.button-market {
-  background-color: #0e61e0;
-}
-
-/* 시장 버튼 호버링 색상 */
-.button-market:hover {
-  background-color: #003D88FF;
-  opacity: 1;
-}
-
-/* 타임라인 버튼 초기 색상 */
-.button-timeline {
-  background-color: #0e61e0;
-}
-
-/* 타임라인 버튼 호버링 시, 색상 */
-.button-timeline:hover {
-  background-color: #003D88FF;
-  opacity: 1;
-}
-
-
 
 /* 시장,타임라인 버튼 위치 */
 .button-container {
@@ -414,13 +372,45 @@ export default {
   flex-wrap: wrap;
 }
 
-/* 시장 선택 텍스트 */
-.bold-text {
-  font-weight: bold;
+.button-timeline {
+  margin: 5px;
+  padding-inline: 10px;
+  font-size: 20px;
+  border-radius: 10px;
+  background: linear-gradient(45deg, rgb(17, 105, 206), rgb(0, 196, 255));
+  transition: background 0.3s ease, opacity 0.3s ease;
+  opacity: 1;
+  color: #ffffff;
 }
 
-/* 시장 선택 텍스트 위치 */
-.Area-text{
-  margin-top: 10px;
+
+button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.5s ease;
 }
+
+/* 버튼 호버링 색상 */
+button:hover {
+  background-color: #1d77e3;
+}
+
+.button-style {
+  margin: 5px;
+  padding-inline: 10px;
+  font-size: 20px;
+  border-radius: 10px;
+  background: linear-gradient(45deg, rgb(17, 105, 206), rgb(0, 196, 255));
+  transition: background 0.3s ease, opacity 0.3s ease;
+  opacity: 1;
+  color: #ffffff;
+}
+
+.button-style:hover {
+  background: linear-gradient(45deg, rgba(255, 165, 0, 0.8), rgba(255, 0, 0, 0.93));
+  opacity: 0.7;
+}
+
 </style>

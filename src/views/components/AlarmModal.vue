@@ -31,6 +31,7 @@
 
 import {ref} from "vue";
 import axios from "axios";
+import {useStore} from "vuex";
 
 export default {
   name:"AlarmModal",
@@ -40,6 +41,7 @@ export default {
     }
   },
   setup(props) {
+    const store = useStore()
 
     const selectedStocks = ref({...props.selectedStock});
     const percentage = ref(0);
@@ -54,7 +56,6 @@ export default {
         percentage.value -= 5;
       }
     };
-
     // '알림 등록하기' 버튼을 눌렀을 때 호출되는 함수
     const registerAlert = async() => {
       // 알림 설정 정보를 객체로 만듭니다.
@@ -63,7 +64,7 @@ export default {
         // morLes: percentage.value >= 0 ? '+' : '-',  // 퍼센트가 0 이상이면 '+', 아니면 '-'를 설정
         // price: []
 
-          const url = "http://222.102.43.244:8094/favorite_stock/update";
+          const url = "http://221.156.60.18:9101/alarm";
 
           // JavaScript
           const plus = document.getElementById('plus');
@@ -90,11 +91,11 @@ export default {
 
           const result = response.data
 
-          sessionStorage.setItem("favoite_stock", JSON.stringify(result))
-          const data = sessionStorage.getItem("favoite_stock")
-          console.log("favoite_stock", JSON.parse(data))
+          sessionStorage.setItem("favorite_stock", JSON.stringify(result))
+          const data = sessionStorage.getItem("favorite_stock")
+          console.log("favorite_stock", JSON.parse(data))
       // Vuex 액션을 호출하여 알림 설정 정보를 스토어에 저장합니다.
-      // store.dispatch('saveAlertSetting', alertSetting);
+      store.dispatch('StockPage/saveAlertSetting', favoriteStockBody);
     };
 
 
