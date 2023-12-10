@@ -1,15 +1,15 @@
 <template>
+
   <div class="py-4 container-fluid">
     <div class="row">
       <div class="col-lg-10">
-        <CandleStickChart v-if="selectedStock" :selectedStock="selectedStock"
-                          @close="handleCloseClick"></CandleStickChart>
-        <MyStock :stocks="sessionStock" @removeFromMyStocks="removeFromMyStocks" @onStockClick="handleStockClick"/>
+        <CandleStickChart v-if="selectedStock" :selectedStock="selectedStock" @close="handleCloseClick"></CandleStickChart>
+        <MyStock :stocks="myStocks" @removeFromMyStocks="removeFromMyStocks" @onStockClick="handleStockClick" class="stock-list"/>
       </div>
     </div>
     <div class="row">
       <div class="col-lg-10">
-        <AllStock :stocks="allStocks" @addToMyStocks="addToMyStocks" @onStockClick="handleStockClick"/>
+        <AllStock :stocks="allStocks" @addToMyStocks="addToMyStocks" @onStockClick="handleStockClick" class="stock-list"/>
       </div>
     </div>
   </div>
@@ -116,9 +116,9 @@ export default {
 };
 </script>
 
-
-<style>
+<style scoped>
 .table-component, .chart-component {
   width: 50%;
 }
+
 </style>

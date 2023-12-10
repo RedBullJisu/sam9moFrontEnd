@@ -15,7 +15,6 @@
               {{ category }}
             </button>
 
-
           </div>
         </div>
 
@@ -67,6 +66,7 @@ import axios from "axios";
 import {ref, onMounted, computed} from "vue";
 export default {
   name: "NewsPage",
+
   setup() {
     const categories = {"전체": 'whole', "경제": 'money', "사회": 'society', "정치": 'politics'};
     const selectedCategory = ref('전체');
@@ -243,7 +243,7 @@ export default {
 /* 상세뉴스 보기 버튼 */
 .btn-set {
   border-radius: 10px;
-  background-color: #4CAF50;
+  background-color: #0B54C4FF;
   color: white;
   border: none;
   cursor: pointer;
@@ -251,12 +251,12 @@ export default {
   margin-top: 30px;
   margin-left: 5px;
 
-  transition: background-color 0.5s ease;
+  transition: background-color 0.3s ease;
 }
 
 /* 버튼 호버링 색상 */
 button:hover {
-  background-color: #1d77e3;
+  background-color: rgba(19, 115, 25, 0.58);
 }
 
 /* 감성분석 텍스트 */
